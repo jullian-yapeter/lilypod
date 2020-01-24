@@ -7,16 +7,25 @@
 #define Garage_h
 
 // library interface description
-class Conductivity
+class Garage
 {
   // user-accessible "public" interface
   public:
-    Conductivity();
-    void doSomething(void);
+    Garage();
+    bool openGarage();
+    bool closeGarage();
+    
   // library-accessible "private" interface
   private:
-    int value;
-    void doSomethingSecret(void);
+    int pwmPin;	//initializing pin 2 as pwm
+    int in1;
+    int in2;
+    int limitSwitchPinTop;
+    int limitSwitchPinBottom;
+    bool brakeGarage();
+    bool waitForTopSwitch();
+    bool waitForBottomSwitch();
+
 };
 
 #endif
