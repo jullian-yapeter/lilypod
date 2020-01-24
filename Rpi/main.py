@@ -1,5 +1,3 @@
-import serial
-
 from cloudcomm import cloudcomm
 from serialcomm import serialcomm
 from spectrometer import noircam
