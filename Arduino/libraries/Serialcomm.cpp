@@ -16,7 +16,7 @@ Serialcomm::Serialcomm()
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-
+//
 byte* Serialcomm::getDataPacket()
 {
     return bytestream.DATAPACKET;
