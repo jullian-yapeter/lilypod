@@ -1,22 +1,26 @@
 /*
-  Phsensor.h - library for pH sensor interfacing
+  PhSensor.h - library for pH sensor interfacing
   Copyright (c) 2020 Team Lilypod.  All right reserved.
 */
 
-#ifndef Phsensor_h
-#define Phsensor_h
+#ifndef PhSensor_h
+#define PhSensor_h
 
 // library interface description
-class Phsensor
-{
+class PhSensor{
   // user-accessible "public" interface
   public:
-    Phsensor();
-    void doSomething(void);
+    PhSensor(int phSensorPin);
+    float samplePh(void);
+    unsigned long int _avgValue; 
+    int _buf[10], _temp;
+    int _phSensorPin;
+
   // library-accessible "private" interface
   private:
-    int value;
-    void doSomethingSecret(void);
+    float readAvgAnalogValue(void);
+    float convertAnalogtoPh(float avgValue);
+    
 };
 
 #endif

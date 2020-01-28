@@ -1,5 +1,5 @@
 #include "sensor/Conductivity.h"
-#include "sensor/Phsensor.h"
+#include "sensor/PhSensor.h"
 #include "actuator/Garage.h"
 #include "actuator/Trap.h"
 
