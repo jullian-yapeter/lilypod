@@ -2,6 +2,6 @@
 .DS_Store
 lilyenv
 *.log
-*/__init__.py
-*/__pycache__
-/cloudcomm/privatekey
+!**/__init__.py
+!**/__pycache__/
+!**/privatekey/
