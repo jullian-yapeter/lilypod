@@ -3,8 +3,6 @@ import logging
 
 import binascii
 
-logging.basicConfig(level=logging.INFO, file='logs/piserialcomm.log')
-
 
 class Serialcomm:
     def __init__(self, baudrate, slaveport='/dev/ttyACM0'):
@@ -17,7 +15,7 @@ class Serialcomm:
             bytesize=serial.EIGHTBITS,
             timeout=1)
 
-    def readSerial(self):
+    def read_serial(self):
         dataPacket = []
         self.ser.reset_input_buffer()
         self.ser.read_until(bytearray.fromhex('FF'))
