@@ -4,12 +4,13 @@
 */
 
 // include this library's description file
+#include "Arduino.h"
 #include "PhSensor.h"
 
 // Constructor /////////////////////////////////////////////////////////////////
 
-PhSensor::PhSensor(int pHSensorPin){
-  _phSensorPin = pHSensorPin;
+PhSensor::PhSensor(int PhSensorPin){
+  _PhSensorPin = PhSensorPin;
 
 }
 
@@ -18,9 +19,9 @@ PhSensor::PhSensor(int pHSensorPin){
 float PhSensor::samplePh(void){
     float avgValue = readAvgAnalogValue();
     float pHValue = convertAnalogtoPh(avgValue);
-    Serial.print('pH Value: ');
+    Serial.print("pH Value: ");
     Serial.print(pHValue);
-    Serial.print('\n');
+    Serial.print("\n");
     return pHValue;
 }
 
@@ -29,8 +30,8 @@ float PhSensor::readAvgAnalogValue(void){
     //Get 10 sample value from the sensor for smooth the value 
     unsigned long int avgValue;
     for(int i = 0; i < 10; i++){
-        _buf[i] = analogRead(_phSensorPin);
-        delay(10);
+        _buf[i] = analogRead(_PhSensorPin);
+        delay(20);
     }
     //sort the analog from small to large
     for(int i=0;i<9;i++){
@@ -43,6 +44,7 @@ float PhSensor::readAvgAnalogValue(void){
             }
         }
     }
+    avgValue = 0;
     for(int i=2; i<8; i++){ //take the average value of 6 center sample
         avgValue += _buf[i];
     }

@@ -10,11 +10,11 @@
 class PhSensor{
   // user-accessible "public" interface
   public:
-    PhSensor(int phSensorPin);
+    PhSensor(int PhSensorPin);
     float samplePh(void);
     unsigned long int _avgValue; 
     int _buf[10], _temp;
-    int _phSensorPin;
+    int _PhSensorPin;
 
   // library-accessible "private" interface
   private:
