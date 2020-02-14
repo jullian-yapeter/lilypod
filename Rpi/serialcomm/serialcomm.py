@@ -30,3 +30,10 @@ class Serialcomm:
         else:
             logging.error("WRONG ENDBYTE")
         return dataPacket
+
+    def write_serial(self, commands):
+        commandToSend = commands
+        commandToSend.append(hex(int('ff', 16)), 0)
+        commandToSend.append(hex(int('fe', 16)), -1)
+        self.ser.write(bytearray(commandToSend))
+        logging.info("COMMANDS SENT")
