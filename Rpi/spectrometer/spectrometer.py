@@ -261,7 +261,8 @@ def export_diagram(name, normalized_results):
     draw = ImageDraw.Draw(sd)
 
     w1 = 380.0
-    w2 = 780.0
+    # w2 = 780.0  # visible light end in nm
+    w2 = 1e6
     f1 = 1.0 / w1
     f2 = 1.0 / w2
     for x in range(0, w, 1):
