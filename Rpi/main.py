@@ -32,33 +32,26 @@ class LpodProc():
         else:
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
-    def read_from_arduino(self):
-        while self.commManager.receiveQueue.qsize() <= 0:  # Wait until the first image is pushed to the queue
+    def run_spectroscopy(self):
+        raise NotImplementedError()
+
+    def generateDummyCommandsData(self):
+        while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
-        if self.commManager.receiveQueue.qsize() > 0:
-            self.currData = self.commManager.receiveQueue.get()
+        commands = [random.random() for _ in range(self.serialcomm.messageLength)]
+        return commands
 
     def send_to_arduino(self, commands):
         self.serialcomm.commManager.sendQueue.put(commands)
         logs.pimain.info("COMMANDS PLACED IN QUEUE")
 
-    def run_spectroscopy(self):
-        raise NotImplementedError()
-
-    def generateDummyCommandsData(self):
-        while True:
-            while self.serialcomm.commManager.sendQueue.qsize() > 0:
-                pass
-            commands = [random.random() for _ in range(self.serialcomm.messageLength)]
-            self.serialcomm.commManager.sendQueue.put(commands)
-
-    def popReceiveQueue(self):
-        while True:
-            while self.serialcomm.commManager.receiveQueue.qsize() <= 0:
-                pass
-            if self.serialcomm.commManager.receiveQueue.qsize() > 0:
-                data = self.serialcomm.commManager.receiveQueue.get()
-            print("Received from server : ", data)
+    def read_from_arduino(self):
+        while self.serialcomm.commManager.receiveQueue.qsize() <= 0:
+            pass
+        if self.serialcomm.commManager.receiveQueue.qsize() > 0:
+            self.currData = self.serialcomm.commManager.receiveQueue.get()
+            logs.pimain.info("DATA POPPED FROM QUEUE")
+            return self.currData
 
 
 def main():
@@ -80,22 +73,27 @@ def main():
 
 
 if __name__ == '__main__':
+    logs.pimain.info("LILYPOD MAIN START")
     lpodProc = LpodProc(u'lilypod_one')
-    dummycommandsProc = Process(target=lpodProc.generateDummyCommandsData)
     sendProc = Process(target=lpodProc.serialcomm.socket_send)
     recvProc = Process(target=lpodProc.serialcomm.socket_recv)
-    popProc = Process(target=lpodProc.popReceiveQueue)
-    dummycommandsProc.start()
+
     sendProc.start()
     time.sleep(0.1)
     recvProc.start()
-    popProc.start()
-    time.sleep(10)
-    dummycommandsProc.terminate()
+    time.sleep(0.1)
+
+    # This represents the main functions of the Raspberry Pi
+    start = time.time()
+    while (time.time() - start < 10):
+        commands = lpodProc.generateDummyCommandsData()
+        lpodProc.send_to_arduino(commands)
+        sensordata = lpodProc.read_from_arduino()
+        print("Received from server : ", sensordata)
+        # Process data and update database
+        lpodProc.update_db(location=u'Toronto', ph=2.4, conductivity=8.8, spectroscopy={'low': 2, 'high': 2})
+
     sendProc.terminate()
     recvProc.terminate()
-    popProc.terminate()
-    dummycommandsProc.join()
     sendProc.join()
     recvProc.join()
-    popProc.join()
