@@ -1,9 +1,12 @@
 from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
-from spectrometer import spectrometer
+# from spectrometer import spectrometer
 from logs.logs import logs
 
 from multiprocessing import Process
+import random
+import struct
+import time
 
 
 class LpodProc():
@@ -43,6 +46,14 @@ class LpodProc():
     def run_spectroscopy(self):
         raise NotImplementedError()
 
+    def generateDummySensorData(self):
+        while True:
+            while self.serialcomm.commManager.sendQueue.qsize() > 0:
+                pass
+            floatlist = [random.random() for _ in range(10)]
+            commands = struct.pack('%sf' % len(floatlist), *floatlist)
+            self.serialcomm.commManager.sendQueue.put(commands)
+
 
 def main():
     logs.pimain.info("LILYPOD MAIN START")
@@ -63,4 +74,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    lpodProc = LpodProc(u'lilypod_one')
+    dummydataProc = Process(target=lpodProc.generateDummySensorData)
+    clientProc = Process(target=lpodProc.serialcomm.socket_client)
+    dummydataProc.start()
+    clientProc.start()
+    time.sleep(10)
+    dummydataProc.terminate()
+    clientProc.terminate()
+    dummydataProc.join()
+    clientProc.join()
