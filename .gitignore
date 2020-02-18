@@ -1,7 +1,14 @@
 */.DS_Store
 .DS_Store
+
+# Virtualenvs
 lilyenv
+venv
+
 *.log
 __init__.py
 privatekey/
+
+# Cache
 __pycache__
+test_graph*
