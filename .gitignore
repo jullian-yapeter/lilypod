@@ -12,3 +12,4 @@ privatekey/
 # Cache
 __pycache__
 test_graph*
+*.pyc
