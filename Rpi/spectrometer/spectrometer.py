@@ -1,12 +1,17 @@
 # Code inspired by tonbut https://github.com/tonbut/RPiSpectrometer/blob/master/spectrometer.py
-
-import sys
+import argparse
+from collections import OrderedDict
+from fractions import Fraction
 import math
 import time
+
 import picamera
-from fractions import Fraction
-from collections import OrderedDict
 from PIL import Image, ImageDraw, ImageFile, ImageFont
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--shutter", default=100000)
+args = parser.parse_args()
 
 
 # scan a column to determine top and bottom of area of lightness
@@ -300,7 +305,7 @@ def sample_water():
     try:
         # 1. Take picture
         name = 'test_graph'
-        shutter = int(sys.argv[1]) if sys.argv[1] else 100000
+        shutter = args.shutter
 
         raw_filename = name + "_raw.jpg"
         take_picture(raw_filename, shutter)
