@@ -1,8 +1,9 @@
 from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
 from spectrometer import spectrometer
-
 from logs.logs import logs
+
+from multiprocessing import Process
 
 
 class LpodProc():
@@ -11,6 +12,7 @@ class LpodProc():
                                      spectroscopy={'low': 0, 'high': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(9600)
+        self.currData = None
 
     def update_db(self, name=None, location=None, ph=None, conductivity=None, spectroscopy=None):
         if name is not None:
@@ -28,9 +30,15 @@ class LpodProc():
         else:
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
-    def read_sensor_data(self):
-        dataPacket = self.serialcomm.read_serial()
-        return dataPacket
+    def read_from_arduino(self):
+        while self.commManager.receiveQueue.qsize() <= 0:  # Wait until the first image is pushed to the queue
+            pass
+        if self.commManager.receiveQueue.qsize() > 0:
+            self.currData = self.commManager.receiveQueue.get()
+
+    def send_to_arduino(self, commands):
+        self.serialcomm.commManager.sendQueue.put(commands)
+        logs.pimain.info("COMMANDS PLACED IN QUEUE")
 
     def run_spectroscopy(self):
         raise NotImplementedError()
@@ -39,7 +47,19 @@ class LpodProc():
 def main():
     logs.pimain.info("LILYPOD MAIN START")
     lpodProc = LpodProc(u'lilypod_one')
-    lpodProc.update_db(location=u'Toronto', ph=5.4, conductivity=8.5, spectroscopy={'low': 1, 'high': 2})
+    receiveProc = Process(target=lpodProc.serialcomm.read_serial)
+    sendProc = Process(target=lpodProc.serialcomm.write_serial)
+    receiveProc.start()
+    sendProc.start()
+    try:
+        while True:
+            lpodProc.update_db(location=u'Toronto', ph=5.4, conductivity=8.5, spectroscopy={'low': 1, 'high': 2})
+    except Exception as e:
+        logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
+        receiveProc.terminate()
+        sendProc.terminate()
+        receiveProc.join()
+        sendProc.join()
 
 
 if __name__ == '__main__':
