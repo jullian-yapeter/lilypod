@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFile, ImageFont
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--shutter", default=100000)
+parser.add_argument("-s", "--shutter", type=int,  default=100000)
 args = parser.parse_args()
 
 
