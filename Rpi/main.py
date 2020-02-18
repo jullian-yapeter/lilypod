@@ -75,8 +75,12 @@ def main():
 if __name__ == '__main__':
     logs.pimain.info("LILYPOD MAIN START")
     lpodProc = LpodProc(u'lilypod_one')
+    # Socket version for debugging
     sendProc = Process(target=lpodProc.serialcomm.socket_send)
     recvProc = Process(target=lpodProc.serialcomm.socket_recv)
+    # # Serial version for real application
+    # sendProc = Process(target=lpodProc.serialcomm.socket_send)
+    # recvProc = Process(target=lpodProc.serialcomm.socket_recv)
 
     sendProc.start()
     time.sleep(0.1)
@@ -85,13 +89,16 @@ if __name__ == '__main__':
 
     # This represents the main functions of the Raspberry Pi
     start = time.time()
-    while (time.time() - start < 10):
-        commands = lpodProc.generateDummyCommandsData()
-        lpodProc.send_to_arduino(commands)
-        sensordata = lpodProc.read_from_arduino()
-        print("Received from server : ", sensordata)
-        # Process data and update database
-        lpodProc.update_db(location=u'Toronto', ph=2.4, conductivity=8.8, spectroscopy={'low': 2, 'high': 2})
+    try:
+        while (time.time() - start < 10):
+            commands = lpodProc.generateDummyCommandsData()
+            lpodProc.send_to_arduino(commands)
+            sensordata = lpodProc.read_from_arduino()
+            print("Received from server : ", sensordata)
+            # Process data and update database
+            lpodProc.update_db(location=u'Toronto', ph=2.4, conductivity=8.8, spectroscopy={'low': 2, 'high': 2})
+    except Exception as e:
+        logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
 
     sendProc.terminate()
     recvProc.terminate()

@@ -33,35 +33,6 @@ class Serialcomm:
         #     bytesize=serial.EIGHTBITS,
         #     timeout=1)
 
-    def read_serial(self):
-        while True:
-            dataPacket = []
-            self.ser.reset_input_buffer()
-            self.ser.read_until(bytearray.fromhex('FF'))
-            rawDataPacket = self.ser.read(self.messageLength)
-            endByte = self.ser.read(1)
-            if endByte == bytearray.fromhex('FE'):
-                for i in range(self.messageLength):
-                    dataByte = rawDataPacket[i]
-                    dataHex = binascii.hexlify(dataByte)
-                    dataDec = int(dataHex, 16)
-                    dataPacket.append(dataDec)
-            else:
-                logs.serialcomm.error("WRONG ENDBYTE")
-            self.commManager.receiveQueue.put(dataPacket)
-
-    def write_serial(self, commands):
-        while True:
-            while self.commManager.sendQueue.qsize() <= 0:
-                pass
-            if self.commManager.sendQueue.qsize() > 0:
-                commands = self.commManager.sendQueue.get()
-                commandToSend = commands
-                commandToSend.append(hex(int('ff', 16)), 0)
-                commandToSend.append(hex(int('fe', 16)), -1)
-                self.ser.write(bytearray(commandToSend))
-                logs.serialcomm.info("COMMANDS SENT")
-
     # Function to concatenate message that is received in pieces
     def recvall(self, sock, n):
         # Helper function to recv n bytes or return None if EOF is hit
@@ -122,7 +93,58 @@ class Serialcomm:
             logs.serialcomm.error("UNABLE TO RECEIVE COMMANDS : %s", e)
             self.commManager.client.close()
 
+    def serial_send(self, commands):
+        try:
+            while True:
+                while self.commManager.sendQueue.qsize() <= 0:
+                    pass
+                if self.commManager.sendQueue.qsize() > 0:
+                    commands = self.commManager.sendQueue.get()
+                    commands.insert(0, float(12345.0))
+                    commands.append(float(54321.0))
+                    message = struct.pack('%sf' % len(commands), *commands)
+                    self.ser.write(bytearray(message))
+                    logs.serialcomm.info("DATA SENT TO SERVER")
+                    time.sleep(1)
+        except Exception as e:
+            logs.serialcomm.error("UNABLE TO SEND COMMANDS : %s", e)
+            self.commManager.client.close()
 
-if __name__ == "__main__":
-    serialcomm = Serialcomm(9600)
-    serialcomm.socket_client()
+    def serial_recv(self):
+        epsilon = 0.001
+        try:
+            while True:
+                self.ser.reset_input_buffer()
+                self.ser.read_until(bytearray(struct.pack("f", 12345.0)))
+                rawData = self.ser.read(4*self.messageLength)
+                if not rawData:
+                    raise ValueError
+                endByte = self.ser.read(4)
+                endByteData = struct.unpack("f", endByte)[0]
+                if endByteData - 54321.0 < epsilon:
+                    decoded_data = struct.unpack('%sf' % (self.messageLength), rawData)
+                    self.commManager.receiveQueue.put(decoded_data)
+                    logs.serialcomm.info("DATA PLACED IN RECEIVE QUEUE")
+                    time.sleep(1)
+                else:
+                    logs.serialcomm.warning("WRONG START OR END BYTE, TRASHING DATA")
+                    pass
+        except Exception as e:
+            logs.serialcomm.error("UNABLE TO RECEIVE COMMANDS : %s", e)
+            self.commManager.client.close()
+
+        # while True:
+        #     dataPacket = []
+        #     self.ser.reset_input_buffer()
+        #     self.ser.read_until(bytearray.fromhex('FF'))
+        #     rawDataPacket = self.ser.read(self.messageLength)
+        #     endByte = self.ser.read(1)
+        #     if endByte == bytearray.fromhex('FE'):
+        #         for i in range(self.messageLength):
+        #             dataByte = rawDataPacket[i]
+        #             dataHex = binascii.hexlify(dataByte)
+        #             dataDec = int(dataHex, 16)
+        #             dataPacket.append(dataDec)
+        #     else:
+        #         logs.serialcomm.error("WRONG ENDBYTE")
+        #     self.commManager.receiveQueue.put(dataPacket)
