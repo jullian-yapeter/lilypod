@@ -1,6 +1,9 @@
 entrypoints==0.3
 flake8==3.7.9
 mccabe==0.6.1
+picamera==1.13
+Pillow==7.0.0
+pkg-resources==0.0.0
 pycodestyle==2.5.0
 pydocstyle==5.0.2
 pyflakes==2.1.1

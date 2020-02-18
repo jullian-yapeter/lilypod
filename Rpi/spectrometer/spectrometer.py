@@ -297,47 +297,51 @@ def export_diagram(name, normalized_results):
 
 
 def sample_water():
-    # 1. Take picture
-    name = sys.argv[1]
-    shutter = int(sys.argv[2])
-    raw_filename = name + "_raw.jpg"
-    take_picture(raw_filename, shutter)
+    try:
+        # 1. Take picture
+        name = 'test_graph'
+        shutter = int(sys.argv[1]) if sys.argv[1] else 100000
 
-    # 2. Get picture's aperture
-    im = Image.open(raw_filename)
-    print("locating aperture")
-    pic_pixels = im.load()
-    aperture = find_aperture(pic_pixels, im.size[0], im.size[1])
+        raw_filename = name + "_raw.jpg"
+        take_picture(raw_filename, shutter)
 
-    # 3. Draw aperture and scan line
-    spectrum_angle = -0.01
-    draw = ImageDraw.Draw(im)
-    draw_aperture(aperture, draw)
-    draw_scan_line(aperture, draw, spectrum_angle)
+        # 2. Get picture's aperture
+        im = Image.open(raw_filename)
+        print("locating aperture")
+        pic_pixels = im.load()
+        aperture = find_aperture(pic_pixels, im.size[0], im.size[1])
 
-    # 4. Draw graph on picture
-    print("analysing image")
-    wavelength_factor = 0.95
-    # wavelength_factor = 0.892  # 1000/mm
-    # wavelength_factor=0.892*2.0*600/650 # 500/mm
-    results, max_result = draw_graph(draw, pic_pixels, aperture, spectrum_angle, wavelength_factor)
+        # 3. Draw aperture and scan line
+        spectrum_angle = -0.01
+        draw = ImageDraw.Draw(im)
+        draw_aperture(aperture, draw)
+        draw_scan_line(aperture, draw, spectrum_angle)
 
-    # 5. Inform user of issues with exposure
-    inform_user_of_exposure(max_result)
+        # 4. Draw graph on picture
+        print("analysing image")
+        wavelength_factor = 0.95
+        # wavelength_factor = 0.892  # 1000/mm
+        # wavelength_factor=0.892*2.0*600/650 # 500/mm
+        results, max_result = draw_graph(draw, pic_pixels, aperture, spectrum_angle, wavelength_factor)
 
-    # 6. Save picture with overlay
-    save_image_with_overlay(im, name)
+        # 5. Inform user of issues with exposure
+        inform_user_of_exposure(max_result)
 
-    # 7. Normalize results for export
-    print("exporting CSV")
-    normalized_results = normalize_results(results, max_result)
+        # 6. Save picture with overlay
+        save_image_with_overlay(im, name)
 
-    # 8. Save csv of results
-    export_csv(name, normalized_results)
+        # 7. Normalize results for export
+        print("exporting CSV")
+        normalized_results = normalize_results(results, max_result)
 
-    # 9. Generate spectrum diagram
-    print("generating chart")
-    export_diagram(name, normalized_results)
+        # 8. Save csv of results
+        export_csv(name, normalized_results)
+
+        # 9. Generate spectrum diagram
+        print("generating chart")
+        export_diagram(name, normalized_results)
+    except Exception as e:
+        print(f'Exception occured: {e}')
 
 
 if __name__ == '__main__':
