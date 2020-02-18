@@ -1,5 +1,6 @@
+from logs.logs import logs
+
 import serial
-import logging
 from multiprocessing import Manager
 import socket
 import struct
@@ -17,12 +18,13 @@ class CommManager():
         self.port = port
         self.address = (host, port)
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect(self.address)
 
 
 class Serialcomm:
     def __init__(self, baudrate, slaveport='/dev/ttyACM0'):
         self.commManager = CommManager(host=socket.gethostname(), port=8082)
-        self.numDataBytes = 10
+        self.messageLength = 10
         # self.ser = serial.Serial(
         #     port=slaveport,
         #     baudrate=baudrate,
@@ -36,21 +38,21 @@ class Serialcomm:
             dataPacket = []
             self.ser.reset_input_buffer()
             self.ser.read_until(bytearray.fromhex('FF'))
-            rawDataPacket = self.ser.read(self.numDataBytes)
+            rawDataPacket = self.ser.read(self.messageLength)
             endByte = self.ser.read(1)
             if endByte == bytearray.fromhex('FE'):
-                for i in range(self.numDataBytes):
+                for i in range(self.messageLength):
                     dataByte = rawDataPacket[i]
                     dataHex = binascii.hexlify(dataByte)
                     dataDec = int(dataHex, 16)
                     dataPacket.append(dataDec)
             else:
-                logging.error("WRONG ENDBYTE")
+                logs.serialcomm.error("WRONG ENDBYTE")
             self.commManager.receiveQueue.put(dataPacket)
 
     def write_serial(self, commands):
         while True:
-            while self.commManager.sendQueue.qsize() <= 0:  # Wait until the first image is pushed to the queue
+            while self.commManager.sendQueue.qsize() <= 0:
                 pass
             if self.commManager.sendQueue.qsize() > 0:
                 commands = self.commManager.sendQueue.get()
@@ -58,7 +60,7 @@ class Serialcomm:
                 commandToSend.append(hex(int('ff', 16)), 0)
                 commandToSend.append(hex(int('fe', 16)), -1)
                 self.ser.write(bytearray(commandToSend))
-                logging.info("COMMANDS SENT")
+                logs.serialcomm.info("COMMANDS SENT")
 
     # Function to concatenate message that is received in pieces
     def recvall(self, sock, n):
@@ -85,26 +87,40 @@ class Serialcomm:
         msg = struct.pack('>I', len(msg)) + msg
         sock.sendall(msg)
 
-    def socket_client(self):
-        messageLength = self.numDataBytes
-        self.commManager.client.connect(self.commManager.address)
-        # floatlist = [1, 2, 3, 4, 5]
-        # message = struct.pack('%sf' % len(floatlist), *floatlist)
-        # message = bytearray.fromhex('FF')
-        # message = b'1'
-        while True:
-            while self.commManager.sendQueue.qsize() <= 0:
-                pass
-            if self.commManager.sendQueue.qsize() > 0:
-                message = self.commManager.sendQueue.get()
-            self.send_msg(self.commManager.client, message)
-            data = self.recv_msg(self.commManager.client)
-            if not data:
-                break
-            decoded_data = struct.unpack('%sf' % messageLength, data)
-            print('Received from server: ', decoded_data)
-            time.sleep(1)
-        self.commManager.client.close()
+    def socket_send(self):
+        try:
+            while True:
+                while self.commManager.sendQueue.qsize() <= 0:
+                    pass
+                if self.commManager.sendQueue.qsize() > 0:
+                    commands = self.commManager.sendQueue.get()
+                    commands.insert(0, float(12345.0))
+                    commands.append(float(54321.0))
+                    message = struct.pack('%sf' % len(commands), *commands)
+                    self.send_msg(self.commManager.client, message)
+                    logs.serialcomm.info("DATA SENT TO SERVER")
+                    time.sleep(1)
+        except Exception as e:
+            logs.serialcomm.error("UNABLE TO SEND COMMANDS : %s", e)
+            self.commManager.client.close()
+
+    def socket_recv(self):
+        try:
+            while True:
+                data = self.recv_msg(self.commManager.client)
+                if not data:
+                    raise ValueError
+                decoded_data = struct.unpack('%sf' % (self.messageLength+2), data)
+                if decoded_data[0] == 12345.0 and decoded_data[-1] == 54321.0:
+                    self.commManager.receiveQueue.put(decoded_data)
+                    logs.serialcomm.info("DATA PLACED IN RECEIVE QUEUE")
+                    time.sleep(1)
+                else:
+                    logs.serialcomm.warning("WRONG START OR END BYTE, TRASHING DATA")
+                    pass
+        except Exception as e:
+            logs.serialcomm.error("UNABLE TO RECEIVE COMMANDS : %s", e)
+            self.commManager.client.close()
 
 
 if __name__ == "__main__":

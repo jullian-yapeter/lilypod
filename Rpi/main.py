@@ -5,7 +5,6 @@ from logs.logs import logs
 
 from multiprocessing import Process
 import random
-import struct
 import time
 
 
@@ -46,22 +45,29 @@ class LpodProc():
     def run_spectroscopy(self):
         raise NotImplementedError()
 
-    def generateDummySensorData(self):
+    def generateDummyCommandsData(self):
         while True:
             while self.serialcomm.commManager.sendQueue.qsize() > 0:
                 pass
-            floatlist = [random.random() for _ in range(10)]
-            commands = struct.pack('%sf' % len(floatlist), *floatlist)
+            commands = [random.random() for _ in range(self.serialcomm.messageLength)]
             self.serialcomm.commManager.sendQueue.put(commands)
+
+    def popReceiveQueue(self):
+        while True:
+            while self.serialcomm.commManager.receiveQueue.qsize() <= 0:
+                pass
+            if self.serialcomm.commManager.receiveQueue.qsize() > 0:
+                data = self.serialcomm.commManager.receiveQueue.get()
+            print("Received from server : ", data)
 
 
 def main():
     logs.pimain.info("LILYPOD MAIN START")
     lpodProc = LpodProc(u'lilypod_one')
-    receiveProc = Process(target=lpodProc.serialcomm.read_serial)
     sendProc = Process(target=lpodProc.serialcomm.write_serial)
-    receiveProc.start()
+    receiveProc = Process(target=lpodProc.serialcomm.read_serial)
     sendProc.start()
+    receiveProc.start()
     try:
         while True:
             lpodProc.update_db(location=u'Toronto', ph=5.4, conductivity=8.5, spectroscopy={'low': 1, 'high': 2})
@@ -75,12 +81,21 @@ def main():
 
 if __name__ == '__main__':
     lpodProc = LpodProc(u'lilypod_one')
-    dummydataProc = Process(target=lpodProc.generateDummySensorData)
-    clientProc = Process(target=lpodProc.serialcomm.socket_client)
-    dummydataProc.start()
-    clientProc.start()
+    dummycommandsProc = Process(target=lpodProc.generateDummyCommandsData)
+    sendProc = Process(target=lpodProc.serialcomm.socket_send)
+    recvProc = Process(target=lpodProc.serialcomm.socket_recv)
+    popProc = Process(target=lpodProc.popReceiveQueue)
+    dummycommandsProc.start()
+    sendProc.start()
+    time.sleep(0.1)
+    recvProc.start()
+    popProc.start()
     time.sleep(10)
-    dummydataProc.terminate()
-    clientProc.terminate()
-    dummydataProc.join()
-    clientProc.join()
+    dummycommandsProc.terminate()
+    sendProc.terminate()
+    recvProc.terminate()
+    popProc.terminate()
+    dummycommandsProc.join()
+    sendProc.join()
+    recvProc.join()
+    popProc.join()

@@ -1,5 +1,16 @@
 import socket
 import struct
+import random
+
+messageLength = 10
+
+
+def generateDummySensorData():
+    floatlist = [random.random() for _ in range(messageLength)]
+    floatlist.insert(0, 12345.0)
+    floatlist.append(54321.0)
+    sensordata = struct.pack('%sf' % len(floatlist), *floatlist)
+    return sensordata
 
 
 # Function to concatenate message that is received in pieces
@@ -43,17 +54,20 @@ def server():
     conn, addr = server.accept()
     print("Connection from: " + str(addr))
 
-    floatlist = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-    message = struct.pack('%sf' % len(floatlist), *floatlist)
+    # floatlist = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    # message = struct.pack('%sf' % len(floatlist), *floatlist)
     # message = bytearray.fromhex('FF')
     while True:
         # data = self.recv_msg(client)
-        data = recv_msg(conn)
-        if not data:
+        try:
+            data = recv_msg(conn)
+            if not data:
+                break
+            decoded_data = struct.unpack('%sf' % (messageLength+2), data)
+            print('Received from client: ', decoded_data)
+            send_msg(conn, generateDummySensorData())
+        except Exception:
             break
-        decoded_data = struct.unpack('%sf' % 10, data)
-        print('Received from client: ', decoded_data)
-        send_msg(conn, message)
     conn.close()
 
 
