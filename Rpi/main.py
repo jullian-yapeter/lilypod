@@ -57,24 +57,6 @@ class LpodProc():
 def main():
     logs.pimain.info("LILYPOD MAIN START")
     lpodProc = LpodProc(u'lilypod_one')
-    sendProc = Process(target=lpodProc.serialcomm.write_serial)
-    receiveProc = Process(target=lpodProc.serialcomm.read_serial)
-    sendProc.start()
-    receiveProc.start()
-    try:
-        while True:
-            lpodProc.update_db(location=u'Toronto', ph=5.4, conductivity=8.5, spectroscopy={'low': 1, 'high': 2})
-    except Exception as e:
-        logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
-        receiveProc.terminate()
-        sendProc.terminate()
-        receiveProc.join()
-        sendProc.join()
-
-
-if __name__ == '__main__':
-    logs.pimain.info("LILYPOD MAIN START")
-    lpodProc = LpodProc(u'lilypod_one')
     # Socket version for debugging
     sendProc = Process(target=lpodProc.serialcomm.socket_send)
     recvProc = Process(target=lpodProc.serialcomm.socket_recv)
@@ -104,3 +86,7 @@ if __name__ == '__main__':
     recvProc.terminate()
     sendProc.join()
     recvProc.join()
+
+
+if __name__ == '__main__':
+    main()
