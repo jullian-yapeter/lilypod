@@ -23,13 +23,13 @@ class Serialcomm:
     def __init__(self, baudrate, slaveport='/dev/ttyACM0'):
         self.commManager = CommManager(host=socket.gethostname(), port=8082)
         self.messageLength = 10
-        self.ser = serial.Serial(
-            port=slaveport,
-            baudrate=baudrate,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS,
-            timeout=1)
+        # self.ser = serial.Serial(
+        #     port=slaveport,
+        #     baudrate=baudrate,
+        #     parity=serial.PARITY_NONE,
+        #     stopbits=serial.STOPBITS_ONE,
+        #     bytesize=serial.EIGHTBITS,
+        #     timeout=1)
 
     # Function to concatenate message that is received in pieces
     def recvall(self, sock, n):
