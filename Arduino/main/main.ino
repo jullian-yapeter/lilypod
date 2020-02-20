@@ -1,7 +1,10 @@
-#include "libraries/sensor/Conductivity.h"
+#include "Arduino.h"
+#include "src/sensor/Conductivity.h"
 #include "src/sensor/PhSensor.h"
-#include "libraries/actuator/Garage.h"
-#include "libraries/actuator/Trap.h"
+#include "src/actuator/Motor.h"
+#include <Servo.h>
+#include "src/actuator/Garage.h"
+// #include "src/actuator/Trap.h"
 
 // by Team Lilypod <http://www.projectlilypod.com>
 
@@ -11,14 +14,29 @@
 // Created 22 Jan 2020
 // Pin intializations
 const int pHSensorPin = A0;
+const int motorPin1 = 24;
+const int motorPin2 = 25;
+const int motorEn = 2;
+const int servoGaragePin = 4;
+const int limSwitchTop = 8;
+const int limSwitchBottom = 9;
+
 
 PhSensor phSensor(pHSensorPin);
+Motor testMotor(motorPin1, 
+                motorPin2,
+                motorEn);
+Garage garage;
 
 void setup(){
     Serial.begin(9600);
+    garage.setupGarage(servoGaragePin, limSwitchTop, limSwitchBottom);
     
 }
 
 void loop(){
-     phSensor.samplePh();
+    //  phSensor.samplePh();
+    // testMotor.testFunction();
+    // garage.closeGarage();
+
 }

@@ -1,3 +1,6 @@
 {
-    "python.pythonPath": "lilyenv/bin/python"
+    "python.pythonPath": "lilyenv/bin/python",
+    "files.associations": {
+        "ostream": "cpp"
+    }
 }

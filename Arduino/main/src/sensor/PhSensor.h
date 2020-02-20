@@ -3,8 +3,8 @@
   Copyright (c) 2020 Team Lilypod.  All right reserved.
 */
 
-#ifndef PhSensor_h
-#define PhSensor_h
+#ifndef HEADER_PHSENSOR
+#define HEADER_PHSENSOR
 
 // library interface description
 class PhSensor{
