@@ -1,17 +1,17 @@
 /*
-  Garage.h - library for garage door motor interfacing
+  ServoDoor.h - library for garage door motor interfacing
   Copyright (c) 2020 Team Lilypod.  All right reserved.
 */
 
 // include this library's description file
 #include "Arduino.h"
-#include "Garage.h"
+#include "ServoDoor.h"
 #include <Servo.h>
 
 
 // Constructor /////////////////////////////////////////////////////////////////)
 
-void Garage::setupGarage(int servoPin, int limSwitchTop, int limSwitchBottom){
+void ServoDoor::setupDoor(int servoPin, int limSwitchTop, int limSwitchBottom){
     Servo servo;
 
     _servo = servo;
@@ -26,21 +26,20 @@ void Garage::setupGarage(int servoPin, int limSwitchTop, int limSwitchBottom){
 
 // Public Methods //////////////////////////////////////////////////////////////
 // Assume opening the garage requires CW rotation
-void Garage::openGarage(){
+void ServoDoor::openDoor(){
     // If top limit switch open, keep servo moving in a direction.
     while(!isTopSwitchClosed()){
         changeServoAngle(_FORWARD);
     }
 }
 
-void Garage::closeGarage(){
+void ServoDoor::closeDoor(){
     while(!isBottomSwitchClosed()){
-        Serial.println("Keep getting false");
         changeServoAngle(_BACKWARD);
     }
 }
 
-bool Garage::isTopSwitchClosed(){
+bool ServoDoor::isTopSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitchTop) == LOW) && (_topFlag == 0)){
         Serial.println("Garage door completely closed");
@@ -62,7 +61,7 @@ bool Garage::isTopSwitchClosed(){
     return isClosed;
 }
 
-bool Garage::isBottomSwitchClosed(){
+bool ServoDoor::isBottomSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitchBottom) == LOW) && (_bottomFlag == 0)){
         Serial.println("Garage door completely open");
@@ -83,7 +82,7 @@ bool Garage::isBottomSwitchClosed(){
     return isClosed;
 }
 
-void Garage::changeServoAngle(int direction){
+void ServoDoor::changeServoAngle(int direction){
     int newAngle = 0;
     int currAngle = 0;
     currAngle = _servo.read();
@@ -105,7 +104,7 @@ void Garage::changeServoAngle(int direction){
     delay(200);
 }
 
-void Garage::testFunction(){
+void ServoDoor::testFunction(){
     // Make servo go to 0 degrees 
     Serial.println("In test function");
     _servo.write(0);

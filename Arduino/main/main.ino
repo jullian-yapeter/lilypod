@@ -1,10 +1,9 @@
+#include <Servo.h>
 #include "Arduino.h"
 #include "src/sensor/Conductivity.h"
 #include "src/sensor/PhSensor.h"
 #include "src/actuator/Motor.h"
-#include <Servo.h>
-#include "src/actuator/Garage.h"
-// #include "src/actuator/Trap.h"
+#include "src/actuator/ServoDoor.h"
 
 // by Team Lilypod <http://www.projectlilypod.com>
 
@@ -26,17 +25,17 @@ PhSensor phSensor(pHSensorPin);
 Motor testMotor(motorPin1, 
                 motorPin2,
                 motorEn);
-Garage garage;
+ServoDoor garage;
 
 void setup(){
     Serial.begin(9600);
-    garage.setupGarage(servoGaragePin, limSwitchTop, limSwitchBottom);
+    garage.setupDoor(servoGaragePin, limSwitchTop, limSwitchBottom);
     
 }
 
 void loop(){
     //  phSensor.samplePh();
     // testMotor.testFunction();
-    // garage.closeGarage();
+     garage.closeDoor();
 
 }

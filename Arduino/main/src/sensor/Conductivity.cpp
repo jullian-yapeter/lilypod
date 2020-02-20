@@ -5,6 +5,7 @@
 
 // include this library's description file
 #include "Conductivity.h"
+#include "Arduino.h"
 
 // Constructor /////////////////////////////////////////////////////////////////
 
