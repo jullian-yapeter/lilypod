@@ -80,6 +80,13 @@ bool Serialcomm::processCommandsData(){
   return true;
 }
 
+bool Serialcomm::getCommandsData(float* buf){
+  for (int i = 0; i < messageLength; i++){
+    buf[i] = commandsData[i];
+  }
+  return true;
+}
+
 bool Serialcomm::mirrorReceiveData(){
   receiveCommandsData();
   setSensorData(commandsData);

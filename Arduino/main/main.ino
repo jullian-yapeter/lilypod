@@ -41,4 +41,36 @@ void loop(){
     //  garage.closeDoor();
     // serialcomm.runSerialComm();
 
+    float commandsData[serialcomm.messageLength] = {0.0};
+    serialcomm.receiveCommandsData();
+    serialcomm.getCommandsData(commandsData);
+
+    float pumpState = commandsData[0];
+    float pumpDir = commandsData[1];
+    float pumpSpeed = commandsData[2];
+    float garageState = commandsData[3];
+    float garageDir = commandsData[4];
+    float trapState = commandsData[5];
+    float trapDir = commandsData[6];
+    float phState = commandsData[7];
+    float condState = commandsData[8];
+
+    // Do stuff with commands: get sensor data and run actuators
+    float phValue = 3.14;
+    float condValue = 24.8;
+    float newGarageState = 1.0;
+    float newTrapState = 0.0;
+    ////
+
+    float sensorData[serialcomm.messageLength] = {0.0};
+    sensorData[0] = phValue;
+    sensorData[1] = condValue;
+    sensorData[2] = newGarageState;
+    sensorData[3] = newTrapState;
+
+    serialcomm.setSensorData(sensorData);
+    serialcomm.sendSensorData();
+
+    // If we want to check what the Arduino is receiving
+    // serialcomm.mirrorReceiveData();
 }

@@ -39,8 +39,16 @@ class LpodProc():
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
         # commands = [random.random() for _ in range(self.serialcomm.messageLength)]
-        commands = [10.0, 9.0, 8.0, 7.0, 3.0, 5.0, 4.0, 3.0, 2.0, 1.0]
-        # commands = [123]
+        pumpState = 1.0
+        pumpDir = 1.0
+        pumpSpeed = 3.14
+        garageState = 1.0
+        garageDir = 0.0
+        trapState = 0.0
+        trapDir = 1.0
+        phState = 1.0
+        condState = 1.0
+        commands = [pumpState, pumpDir, pumpSpeed, garageState, garageDir, trapState, trapDir, phState, condState, 0.0]
         return commands
 
     def send_to_arduino(self, commands):
@@ -65,12 +73,10 @@ def main():
     # # Serial version for real application
     sendProc = Process(target=lpodProc.serialcomm.serial_send)
     recvProc = Process(target=lpodProc.serialcomm.serial_recv)
-    # recvloopProc = Process(target=lpodProc.serialcomm.serial_recv_loop)
 
     sendProc.start()
     time.sleep(0.1)
     recvProc.start()
-    # recvloopProc.start()
     time.sleep(0.1)
 
     # This represents the main functions of the Raspberry Pi
@@ -82,7 +88,7 @@ def main():
             # print(commands)
             sensordata = lpodProc.read_from_arduino()
             if sensordata:
-                print("Received from server : ", sensordata)
+                print("Received from Arduino : ", sensordata)
             # Process data and update database
             lpodProc.update_db(location=u'Toronto', ph=2.4, conductivity=8.8, spectroscopy={'low': 2, 'high': 2})
     except Exception as e:
@@ -90,11 +96,8 @@ def main():
 
     sendProc.terminate()
     recvProc.terminate()
-    # recvloopProc.terminate()
     sendProc.join()
     recvProc.join()
-    # recvloopProc.terminate()
-
 
 if __name__ == '__main__':
     main()

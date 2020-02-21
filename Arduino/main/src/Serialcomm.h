@@ -16,6 +16,7 @@ class Serialcomm
 {
   // user-accessible "public" interface
   public:
+    static const int messageLength = 10;
     Serialcomm();
     float cvt_b2f(byte* b, int startidx);
     bool cvt_bytes2floats(float* buf, byte* b);
@@ -25,12 +26,12 @@ class Serialcomm
     bool setSensorData(float* data);
     bool sendSensorData();
     bool processCommandsData();
+    bool getCommandsData(float* buf);
     bool mirrorReceiveData();
     bool runSerialComm();
 
   // library-accessible "private" interface
   private:
-    static const int messageLength = 10;
     float sensorData[messageLength];
     byte sensorBytesData[messageLength*4+2];
     float commandsData[messageLength];
