@@ -4,6 +4,7 @@
 #include "src/sensor/PhSensor.h"
 #include "src/actuator/Motor.h"
 #include "src/actuator/ServoDoor.h"
+#include "src/Serialcomm.h"
 
 // by Team Lilypod <http://www.projectlilypod.com>
 
@@ -22,6 +23,8 @@ const int limSwitchBottom = 9;
 
 
 PhSensor phSensor(pHSensorPin);
+Serialcomm serialcomm;
+
 Motor testMotor;
 ServoDoor garage;
 
@@ -36,5 +39,6 @@ void loop(){
     //  phSensor.samplePh();
     // testMotor.testFunction();
     //  garage.closeDoor();
+    // serialcomm.runSerialComm();
 
 }
