@@ -2,7 +2,7 @@ from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
 # from spectrometer import spectrometer
 from logs.logs import logs
-from routine import LilypodRoutine, RoutineStates
+from routine import LilypodRoutine
 
 from multiprocessing import Process
 # import random
@@ -18,7 +18,7 @@ class LpodProc():
         self.routine = LilypodRoutine()
         self.currData = None
 
-    def update_db(self, name=None, location=None, ph=None, conductivity=None, spectroscopy=None):
+    def update_db(self, name=None, location=None, ph=None, conductivity=None, garbageLevel=None, spectroscopy=None):
         if name is not None:
             self.lilypod.name = name
         if location is not None:
@@ -27,6 +27,8 @@ class LpodProc():
             self.lilypod.ph = ph
         if conductivity is not None:
             self.lilypod.conductivity = conductivity
+        if garbageLevel is not None:
+            self.lilypod.garbageLevel = garbageLevel
         if spectroscopy is not None:
             self.lilypod.spectroscopy = spectroscopy
         if (self.lilypodFirestore.write_to_db(self.lilypod)):
@@ -40,18 +42,11 @@ class LpodProc():
     def generateDummyCommandsData(self):
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
+        # COMMANDS FORMAT:
+        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState,
+        #             trapDir, phState, condState, ussState, ledStrip]
+        # FOR RANDOM COMMANDS:
         # commands = [random.random() for _ in range(self.serialcomm.messageLength)]
-        # pumpState = 1.0
-        # pumpSpeed = 3.14
-        # garageState = 1.0
-        # garageDir = 0.0
-        # trapState = 0.0
-        # trapDir = 1.0
-        # phState = 1.0
-        # condState = 1.0
-        # ussState = 1.0
-        # ledStrip = 3.0
-        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip]
         self.routine.updateState('CHECKGARBAGE')
         commands = self.routine.currentRoutineStep
         return commands
@@ -94,9 +89,16 @@ def main():
             sensordata = lpodProc.read_from_arduino()
             lpodProc.currData = sensordata
             if sensordata:
-                print("Received from Arduino : ", sensordata)
+                newGarageState = sensordata[0]
+                newTrapState = sensordata[1]
+                phValue = sensordata[2]
+                condValue = sensordata[3]
+                ussValue = sensordata[4]
+                print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
+                      .format(newGarageState, newTrapState, phValue, condValue, ussValue))
             # Process data and update database
-            lpodProc.update_db(location=u'Toronto', ph=2.4, conductivity=8.8, spectroscopy={'low': 2, 'high': 2})
+            lpodProc.update_db(location=u'Toronto', ph=round(phValue, 2), conductivity=round(condValue, 2),
+                               garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 2})
     except Exception as e:
         logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
 
@@ -104,6 +106,7 @@ def main():
     recvProc.terminate()
     sendProc.join()
     recvProc.join()
+
 
 if __name__ == '__main__':
     main()

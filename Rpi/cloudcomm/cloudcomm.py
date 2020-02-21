@@ -29,11 +29,12 @@ class LilypodFirestore(object):
 
 
 class LilypodObject(object):
-    def __init__(self, name, location, ph, conductivity, spectroscopy):
+    def __init__(self, name, location, ph, conductivity, garbageLevel, spectroscopy):
         self.name = name
         self.location = location
         self.ph = ph
         self.conductivity = conductivity
+        self.garbageLevel = garbageLevel
         self.spectroscopy = spectroscopy
 
     @staticmethod
@@ -42,6 +43,7 @@ class LilypodObject(object):
                                       source[u'loaction'],
                                       source[u'ph'],
                                       source[u'conductivity'],
+                                      source[u'garbageLevel'],
                                       source[u'spectroscopy'])
         return lilypodObject
 
@@ -51,11 +53,12 @@ class LilypodObject(object):
             u'location': self.location,
             u'ph': self.ph,
             u'conductivity': self.conductivity,
+            u'garbageLevel': self.garbageLevel,
             u'spectroscopy': self.spectroscopy
         }
         return dest
 
     def __repr__(self):
         return(
-            u'Lilypod(name={}, location={}, ph={}, conductivity={}, spectrscopy={})'
-            .format(self.name, self.location, self.ph, self.conductivity, self.spectrscopy))
+            u'Lilypod(name={}, location={}, ph={}, conductivity={}, garbageLevel={}, spectrscopy={})'
+            .format(self.name, self.location, self.ph, self.conductivity, self.garbageLevel, self.spectrscopy))

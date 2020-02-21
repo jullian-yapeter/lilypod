@@ -25,7 +25,7 @@ class LilypodRoutine():
         # Check garbage state
         self.routineLookUp[RoutineStates.CHECKGARBAGE.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
         # Garbage full state
-        self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0]
+        self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
         # Filtering state
         self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 75.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
