@@ -130,4 +130,3 @@ class Serialcomm:
         except Exception as e:
             logs.serialcomm.error("UNABLE TO RECEIVE COMMANDS : %s", e)
             self.commManager.client.close()
-
