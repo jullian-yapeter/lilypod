@@ -2,9 +2,10 @@ from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
 # from spectrometer import spectrometer
 from logs.logs import logs
+from routine import LilypodRoutine, RoutineStates
 
 from multiprocessing import Process
-import random
+# import random
 import time
 
 
@@ -14,6 +15,7 @@ class LpodProc():
                                      spectroscopy={'low': 0, 'high': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(baudrate=baudrate, slaveport=slaveport)
+        self.routine = LilypodRoutine()
         self.currData = None
 
     def update_db(self, name=None, location=None, ph=None, conductivity=None, spectroscopy=None):
@@ -39,16 +41,19 @@ class LpodProc():
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
         # commands = [random.random() for _ in range(self.serialcomm.messageLength)]
-        pumpState = 1.0
-        pumpDir = 1.0
-        pumpSpeed = 3.14
-        garageState = 1.0
-        garageDir = 0.0
-        trapState = 0.0
-        trapDir = 1.0
-        phState = 1.0
-        condState = 1.0
-        commands = [pumpState, pumpDir, pumpSpeed, garageState, garageDir, trapState, trapDir, phState, condState, 0.0]
+        # pumpState = 1.0
+        # pumpSpeed = 3.14
+        # garageState = 1.0
+        # garageDir = 0.0
+        # trapState = 0.0
+        # trapDir = 1.0
+        # phState = 1.0
+        # condState = 1.0
+        # ussState = 1.0
+        # ledStrip = 3.0
+        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip]
+        self.routine.updateState('CHECKGARBAGE')
+        commands = self.routine.currentRoutineStep
         return commands
 
     def send_to_arduino(self, commands):
@@ -87,6 +92,7 @@ def main():
             lpodProc.send_to_arduino(commands)
             # print(commands)
             sensordata = lpodProc.read_from_arduino()
+            lpodProc.currData = sensordata
             if sensordata:
                 print("Received from Arduino : ", sensordata)
             # Process data and update database
