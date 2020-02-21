@@ -8,7 +8,7 @@ class Motor{
         int _pin2;
         int _pinEn;
 
-        Motor(int pin1, int pin2, int pinEn);
+        void setupMotor(int pin1, int pin2, int pinEn);
         void start(int speed, int direction);
         void stop();
         void testFunction();

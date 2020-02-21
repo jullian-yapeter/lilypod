@@ -2,5 +2,7 @@
     "python.pythonPath": "lilyenv/bin/python",
     "files.associations": {
         "ostream": "cpp"
-    }
+    },
+
+    "arduino.path": "/Applications",
 }

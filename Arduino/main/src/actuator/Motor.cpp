@@ -2,7 +2,7 @@
 #include "Motor.h"
 
 
-Motor::Motor(int pin1, int pin2, int pinEn){
+void Motor::setupMotor(int pin1, int pin2, int pinEn){
     _pin1 = pin1;
     _pin2 = pin2;
     _pinEn = pinEn;
@@ -41,7 +41,7 @@ void Motor::setSpeed(int speed){
     Serial.print("pwmOutput: ");
     Serial.print(pwmOutput);
     Serial.print("\n");
-    analogWrite(_pinEn, getPwmOutput(speed));  // Send PWM signal to L298N Enable pin
+    analogWrite(_pinEn, (int) pwmOutput);  // Send PWM signal to L298N Enable pin
 }
 
 int Motor::getPwmOutput(int dutyCycle){
@@ -52,19 +52,19 @@ int Motor::getPwmOutput(int dutyCycle){
 void Motor::testFunction(){
     start(100, _FORWARD);
     Serial.println("Moving Forward at 100");
-    delay(5000);
+    delay(1000);
     start(60, _FORWARD);
     Serial.println("Moving Forward at 60");
-    delay(5000);
+    delay(1000);
     stop();
     Serial.println("Stopped");
     delay(2000);
     start(100, _BACKWARD);
     Serial.println("Moving Backward at 100");
-    delay(5000);
+    delay(1000);
     start(60, _BACKWARD);
     Serial.println("Moving Backward at 60");
-    delay(5000);
+    delay(1000);
     stop();
     Serial.println("Stopped");
     delay(2000);

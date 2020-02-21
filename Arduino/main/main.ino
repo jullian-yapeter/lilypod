@@ -22,13 +22,12 @@ const int limSwitchBottom = 9;
 
 
 PhSensor phSensor(pHSensorPin);
-Motor testMotor(motorPin1, 
-                motorPin2,
-                motorEn);
+Motor testMotor;
 ServoDoor garage;
 
 void setup(){
     Serial.begin(9600);
+    testMotor.setupMotor(motorPin1, motorPin2, motorEn);
     garage.setupDoor(servoGaragePin, limSwitchTop, limSwitchBottom);
     
 }
@@ -36,6 +35,6 @@ void setup(){
 void loop(){
     //  phSensor.samplePh();
     // testMotor.testFunction();
-     garage.closeDoor();
+    //  garage.closeDoor();
 
 }
