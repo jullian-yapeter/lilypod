@@ -5,31 +5,35 @@
 
 #ifndef Serialcomm_h
 #define Serialcomm_h
+#include "Arduino.h"
 
-const int numDataBytes = 8;
-const int numCommandBytes = 8;
-
-struct Bytestream_t
-{
-    byte STARTBYTE;
-    byte ENDBYTE;
-    byte DATAPACKET[numDataBytes];
-    byte COMMANDSPACKET[numCommandBytes];
+union FLOATUNION_T{
+    float val;
+    byte b[4];
 };
-// library interface description
+
 class Serialcomm
 {
   // user-accessible "public" interface
   public:
     Serialcomm();
-    byte* getDataPacket();
-    bool setDataPacket(int idx, byte* data);
-    byte* serializeData(float rawdata);
+    float cvt_b2f(byte* b, int startidx);
+    bool cvt_bytes2floats(float* buf, byte* b);
+    bool cvt_floats2bytes(byte* buf, float* vals);
     bool sendDataPacket();
-    byte* readCommandsPacket();
+    bool receiveCommandsData();
+    bool setSensorData(float* data);
+    bool sendSensorData();
+    bool processCommandsData();
+    bool mirrorReceiveData();
+    bool runSerialComm();
+
   // library-accessible "private" interface
   private:
-    Bytestream_t bytestream;
+    static const int messageLength = 10;
+    float sensorData[messageLength];
+    byte sensorBytesData[messageLength*4+2];
+    float commandsData[messageLength];
 };
 
 

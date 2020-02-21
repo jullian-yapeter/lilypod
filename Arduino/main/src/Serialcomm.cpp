@@ -5,71 +5,91 @@
 
 // include this library's description file
 #include "Serialcomm.h"
+#include "Arduino.h"
 
 using namespace std;
 // Constructor /////////////////////////////////////////////////////////////////
 
-Serialcomm::Serialcomm()
-{
-    bytestream.STARTBYTE = 0xFF;
-    bytestream.ENDBYTE = 0xFE;
+Serialcomm::Serialcomm(){
+
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
 //
-byte* Serialcomm::getDataPacket()
-{
-    return bytestream.DATAPACKET;
-    return true;
+float Serialcomm::cvt_b2f(byte* b, int startidx){
+    FLOATUNION_T tempvar;
+    for (int i=0; i<4; i++){
+        tempvar.b[i] = b[startidx*4+i];
+    }
+    return tempvar.val;
 }
 
-bool Serialcomm::setDataPacket(int idx, byte* data)
-{
-    try {
-        bytestream.DATAPACKET[idx] = *data;
-    } catch (const exception& e) {
-        cout << e.what();
-        return false;
+bool Serialcomm::cvt_bytes2floats(float* buf, byte* b){
+    for (int i = 0; i<messageLength; i++){
+        buf[i] = cvt_b2f(b,i);
     }
     return true;
 }
 
-byte* Serialcomm::serializeData(float rawdata)
-{
-    byte* b = (byte*)&rawdata;
-    return b;
+bool Serialcomm::cvt_floats2bytes(byte* buf, float* vals){
+    buf[0] = 0xFE;
+    for (int i = 0; i < messageLength; i++){
+        FLOATUNION_T tempvar;
+        tempvar.val = vals[i];
+        for (int j = 0; j < 4; j++){
+            buf[i*4+j+1]  = tempvar.b[j];
+        }
+    }
+    buf[messageLength*4+2-1] = 0xFF;
+    return true;
 }
 
-bool Serialcomm::sendDataPacket()
-{
-    bytestream.DATAPACKET[0] = bytestream.STARTBYTE;
-    bytestream.DATAPACKET[7] = bytestream.ENDBYTE;
-    Serial.write(bytestream.DATAPACKET, numDataBytes);
+bool Serialcomm::receiveCommandsData(){
+    while(!Serial.available()){}
+    if(Serial.available()){
+        byte rawCommandsData[messageLength*4+1] = {};
+        byte startbyte = Serial.read();
+        while (Serial.read() != 0xFA) {};
+        int length = Serial.readBytes(rawCommandsData, messageLength*4+1);
+        if (rawCommandsData[messageLength*4] == 0xFB){
+            cvt_bytes2floats(commandsData, rawCommandsData);
+        }
+    }
+  return true;
 }
 
-byte* Serialcomm::readCommandsPacket()
-{
-    static byte index=0;
-    
-    if (Serial.available() > 0 ) {
-        char inChar = Serial.read();
-        
-        if (inChar==bytestream.STARTBYTE) { // If start byte is received
-            index=0; // then reset buffer and start fresh
-        } else if (inChar==bytestream.ENDBYTE) { // If stop byte is received
-            bytestream.COMMANDSPACKET[index] = '\0'; // then null terminate
-            index=0; // this isn't necessary, but helps limit overflow
-        } else { // otherwise
-            bytestream.COMMANDSPACKET[index] = inChar; // put the character into our array
-            index++; // and move to the next key in the array
-        }
-        
-        /* Overflow occurs when there are more than 5 characters in between
-            * the start and stop bytes. This has to do with having limited space
-            * in our array. We chose to limit our array to 5 (+1 for null terminator)
-            * because an int will never be above 5 characters */
-        if (index >= numCommandBytes) {
-            index=0;
-            Serial.println("Overflow occured, next value is unreliable");
-        }
+bool Serialcomm::setSensorData(float* data){
+  for (int i = 0; i < messageLength; i++){
+    sensorData[i] = data[i];
+  }
+  return true;
+}
+
+bool Serialcomm::sendSensorData(){
+  cvt_floats2bytes(sensorBytesData, sensorData);
+  Serial.write(sensorBytesData,messageLength*4+2);
+}
+
+bool Serialcomm::processCommandsData(){
+  float sensorDataPrep[10] = {};
+  for (int i = 0; i < messageLength; i++){
+    // Process Data
+    sensorDataPrep[i] = commandsData[i]+1;
+  }
+  setSensorData(sensorDataPrep);
+  return true;
+}
+
+bool Serialcomm::mirrorReceiveData(){
+  receiveCommandsData();
+  setSensorData(commandsData);
+  sendSensorData();
+  return true;
+}
+
+bool Serialcomm::runSerialComm(){
+  receiveCommandsData();
+  processCommandsData();
+  sendSensorData();
+  return true;
 }
