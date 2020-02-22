@@ -21,21 +21,21 @@ const float EPSILON = 0.0001;
 const int pHSensorPin = A0;
 
 // Pumps
-const int motorPin1 = 24;
-const int motorPin2 = 25;
+const int motorPin1 = 26;  // 24
+const int motorPin2 = 27;  // 25
 const int motorEn = 2;
 
 // Servo doors
 const int servoGaragePin = 4;
-const int garageLimSwitchTop = 8;
-const int garageLimSwitchBottom = 9;
+const int garageLimSwitchTop = 30;  //8
+const int garageLimSwitchBottom = 31;  //9
 const int servoTrapPin = 5;  // untested
-const int trapLimSwitchTop = 6; // untested
-const int trapLimSwitchBottom = 7; // untested
+const int trapLimSwitchTop = 34; // untested
+const int trapLimSwitchBottom = 35; // untested
 
 // Sonar
-const int trigPin = 12;
-const int echoPin = 10;  // Not using 13 because 13 connects to onboard LED
+const int trigPin = 22;
+const int echoPin = 23;  // Not using 13 because 13 connects to onboard LED
 
 // Pin intializations end---------------------
 
