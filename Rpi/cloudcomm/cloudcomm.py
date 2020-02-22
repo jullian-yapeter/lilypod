@@ -40,7 +40,7 @@ class LilypodObject(object):
     @staticmethod
     def from_dict(source):
         lilypodObject = LilypodObject(source[u'name'],
-                                      source[u'loaction'],
+                                      source[u'location'],
                                       source[u'ph'],
                                       source[u'conductivity'],
                                       source[u'garbageLevel'],
