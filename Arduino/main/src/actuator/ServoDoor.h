@@ -19,8 +19,8 @@ class ServoDoor{
     int _bottomFlag = 0;
     Servo _servo;
     void setupDoor(int servoPin, int limSwitchTop, int limSwitchBottom);
-    void openDoor();
-    void closeDoor();
+    float openDoor();
+    float closeDoor();
     void testFunction();
     
     

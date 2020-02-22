@@ -7,7 +7,7 @@ class Sonar{
     public:
         void setupSonar(int trigPin1, int echoPin1);
         long findGarbageCapacity();
-        bool isGarbageFull();
+        float isGarbageFull();
         int _trigPin;
         int _echoPin;
         int _garbageThreshold = 15;
