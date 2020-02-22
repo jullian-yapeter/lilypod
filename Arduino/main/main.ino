@@ -2,6 +2,7 @@
 #include "Arduino.h"
 #include "src/sensor/Conductivity.h"
 #include "src/sensor/PhSensor.h"
+#include "src/sensor/Sonar.h"
 #include "src/actuator/Motor.h"
 #include "src/actuator/ServoDoor.h"
 #include "src/Serialcomm.h"
@@ -14,21 +15,33 @@
 // Created 22 Jan 2020
 // global variables
 const float EPSILON = 0.0001;
-// Pin intializations
+// Pin intializations start---------------------
+
+// pH Sensor
 const int pHSensorPin = A0;
+
+// Pumps
 const int motorPin1 = 24;
 const int motorPin2 = 25;
 const int motorEn = 2;
+
+// Servo doors
 const int servoGaragePin = 4;
 const int limSwitchTop = 8;
 const int limSwitchBottom = 9;
 
+// Sonar
+const int trigPin = 12;
+const int echoPin = 10;  // Not using 13 because 13 connects to onboard LED
+
+// Pin intializations end---------------------
 
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
 
 Motor testMotor;
 ServoDoor garage;
+Sonar garbageChecker;
 
 bool checkequals(float a, float b){
     return (fabs(a - b) < EPSILON);
@@ -38,7 +51,7 @@ void setup(){
     Serial.begin(9600);
     testMotor.setupMotor(motorPin1, motorPin2, motorEn);
     garage.setupDoor(servoGaragePin, limSwitchTop, limSwitchBottom);
-    
+    garbageChecker.setupSonar(trigPin, echoPin);
 }
 
 void loop(){
@@ -46,6 +59,7 @@ void loop(){
     // testMotor.testFunction();
     // garage.closeDoor();
     // serialcomm.runSerialComm();
+    // bool garbageState = garbageChecker.isGarbageFull();
 
     float commandsData[serialcomm.messageLength] = {0.0};
     serialcomm.receiveCommandsData();
