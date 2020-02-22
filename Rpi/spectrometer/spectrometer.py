@@ -302,11 +302,11 @@ def export_diagram(name, normalized_results):
     sd.save(output_filename, "PNG", quality=95, optimize=True, progressive=True)
 
 
-def sample_water():
+def sample_water(file_name='test_graph', shutter=100000):
     try:
         # 1. Take picture
-        name = 'test_graph'
-        shutter = args.shutter
+        name = file_name
+        shutter = args.shutter if args.shutter else shutter
 
         raw_filename = name + "_raw.jpg"
         take_picture(raw_filename, shutter)
@@ -346,8 +346,12 @@ def sample_water():
         # 9. Generate spectrum diagram
         print("generating chart")
         export_diagram(name, normalized_results)
+
+        # 10. Return the results for pi main loop
+        return normalized_results
     except Exception as e:
         print(f'Exception occured: {e}')
+        return None
 
 
 if __name__ == '__main__':
