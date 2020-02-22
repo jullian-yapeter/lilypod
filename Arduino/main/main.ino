@@ -90,7 +90,7 @@ void loop(){
 
     if (checkequals(pumpState,1.0)){
         // Run pump with speed = pumpSpeed
-        pump.start((int) pumpSpeed, 1);  // 1 for forward
+        pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
     }
     else{
         // Turn off pump
