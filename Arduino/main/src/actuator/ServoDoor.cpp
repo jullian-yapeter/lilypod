@@ -26,17 +26,19 @@ void ServoDoor::setupDoor(int servoPin, int limSwitchTop, int limSwitchBottom){
 
 // Public Methods //////////////////////////////////////////////////////////////
 // Assume opening the garage requires CW rotation
-void ServoDoor::openDoor(){
+float ServoDoor::openDoor(){
     // If top limit switch open, keep servo moving in a direction.
     while(!isTopSwitchClosed()){
         changeServoAngle(_FORWARD);
     }
+    return 1.0
 }
 
-void ServoDoor::closeDoor(){
+float ServoDoor::closeDoor(){
     while(!isBottomSwitchClosed()){
         changeServoAngle(_BACKWARD);
     }
+    return 1.0
 }
 
 bool ServoDoor::isTopSwitchClosed(){

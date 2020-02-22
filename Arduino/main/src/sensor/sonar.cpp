@@ -36,11 +36,11 @@ long Sonar::findGarbageCapacity(){
     return distance;
 }
 
-bool Sonar::isGarbageFull(){
+float Sonar::isGarbageFull(){
     unsigned capacity = findGarbageCapacity();
-    bool isFull = false;
+    float isFull = 0.0;
     if (capacity <= _garbageThreshold){
-        isFull = true;
+        isFull = 1.0;
         Serial.println("Garbage is full");
     }else{
         Serial.print("Garbage capacity: ");

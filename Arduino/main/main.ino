@@ -27,8 +27,11 @@ const int motorEn = 2;
 
 // Servo doors
 const int servoGaragePin = 4;
-const int limSwitchTop = 8;
-const int limSwitchBottom = 9;
+const int garageLimSwitchTop = 8;
+const int garageLimSwitchBottom = 9;
+const int servoTrapPin = 5;  // untested
+const int trapLimSwitchTop = 6; // untested
+const int trapLimSwitchBottom = 7; // untested
 
 // Sonar
 const int trigPin = 12;
@@ -39,8 +42,9 @@ const int echoPin = 10;  // Not using 13 because 13 connects to onboard LED
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
 
-Motor testMotor;
+Motor pump;
 ServoDoor garage;
+ServoDoor trap;
 Sonar garbageChecker;
 
 bool checkequals(float a, float b){
@@ -49,8 +53,9 @@ bool checkequals(float a, float b){
 
 void setup(){
     Serial.begin(9600);
-    testMotor.setupMotor(motorPin1, motorPin2, motorEn);
-    garage.setupDoor(servoGaragePin, limSwitchTop, limSwitchBottom);
+    pump.setupMotor(motorPin1, motorPin2, motorEn);
+    garage.setupDoor(servoGaragePin, garageLimSwitchTop, garageLimSwitchBottom);
+    trap.setupDoor(servoTrapPin, trapLimSwitchTop, trapLimSwitchBottom);
     garbageChecker.setupSonar(trigPin, echoPin);
 }
 
@@ -85,29 +90,36 @@ void loop(){
 
     if (checkequals(pumpState,1.0)){
         // Run pump with speed = pumpSpeed
+        pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
     }
     else{
         // Turn off pump
+        pump.stop();
     }
-    if (checkequals(garageState,1.0)){
+    if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir
         // update garageState to inform Rpi
-        newGarageState = 1.0;
-    }
-    else{
-        // Keep same garage state
+        if (checkequals(garageDir, 1.0)){
+            newGarageState = garage.openDoor();
+        }
+        else if (checkequals(garageState, 0.0)){
+            newGarageState = garage.closeDoor();
+        }
     }
     if (checkequals(trapState,1.0)){
+        
         // Move trap in direction = trapDir
         // update trapState to inform Rpi
-        newTrapState = 1.0;
-    }
-    else{
-        // Keep same trap state
+        if (checkequals(trapDir, 1.0)){
+            newTrapState = trap.openDoor();
+        }
+        else if (checkequals(trapDir, 0.0)){
+            newTrapState = trap.closeDoor();
+        }
     }
     if (checkequals(phState,1.0)){
         // get new pH reading and store it in phValue
-        phValue = 3.14;
+        phValue = phSensor.samplePh();
     }
     if (checkequals(condState,1.0)){
         // get new conductivity reading and store it in phValue
@@ -115,7 +127,7 @@ void loop(){
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
-        ussValue = 1.0;
+        ussValue = garbageChecker.isGarbageFull();
     }
     if (checkequals(ledState,0.0)){
         // shine blue
