@@ -23,7 +23,7 @@ class LpodProc():
             self.lilypod.name = name
         if location is not None:
             self.lilypod.location = location
-        if ph is not ph:
+        if ph is not None:
             self.lilypod.ph = ph
         if conductivity is not None:
             self.lilypod.conductivity = conductivity
@@ -77,7 +77,7 @@ class LpodProc():
 
 def main():
     logs.pimain.info("LILYPOD MAIN START")
-    lpodProc = LpodProc(name=u'lilypod_one', baudrate=9600, slaveport='/dev/tty.usbmodem1411')
+    lpodProc = LpodProc(name=u'lilypod_two', baudrate=9600, slaveport='/dev/tty.usbmodem1411')
     # Socket version for debugging
     # sendProc = Process(target=lpodProc.serialcomm.socket_send)
     # recvProc = Process(target=lpodProc.serialcomm.socket_recv)
@@ -108,8 +108,8 @@ def main():
                 print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
-                lpodProc.update_db(location=u'Toronto', ph=round(phValue, 2), conductivity=round(condValue, 2),
-                                   garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 2})
+                lpodProc.update_db(location=u'London', ph=round(phValue, 2), conductivity=round(condValue, 2),
+                                   garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 3})
     except Exception as e:
         logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
 
