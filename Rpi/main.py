@@ -11,7 +11,7 @@ import time
 
 class LpodProc():
     def __init__(self, name, baudrate=9600, slaveport='/dev/tty.usbmodem1421'):
-        self.lilypod = LilypodObject(name=name, location=u'Waterloo', ph=0.0, conductivity=0.0,
+        self.lilypod = LilypodObject(name=name, location=u'Waterloo', ph=0.0, conductivity=0.0, garbageLevel=0.0,
                                      spectroscopy={'low': 0, 'high': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(baudrate=baudrate, slaveport=slaveport)
@@ -51,6 +51,17 @@ class LpodProc():
         commands = self.routine.currentRoutineStep
         return commands
 
+    def generateCommandsData(self, sensorData):
+        while self.serialcomm.commManager.sendQueue.qsize() > 0:
+            pass
+        newGarageState = sensorData[0]
+        newTrapState = sensorData[1]
+        phValue = sensorData[2]
+        condValue = sensorData[3]
+        ussValue = sensorData[4]
+        
+        raise NotImplementedError()
+
     def send_to_arduino(self, commands):
         self.serialcomm.commManager.sendQueue.put(commands)
         logs.pimain.info("COMMANDS PLACED IN QUEUE")
@@ -86,19 +97,19 @@ def main():
             commands = lpodProc.generateDummyCommandsData()
             lpodProc.send_to_arduino(commands)
             # print(commands)
-            sensordata = lpodProc.read_from_arduino()
-            lpodProc.currData = sensordata
-            if sensordata:
-                newGarageState = sensordata[0]
-                newTrapState = sensordata[1]
-                phValue = sensordata[2]
-                condValue = sensordata[3]
-                ussValue = sensordata[4]
+            sensorData = lpodProc.read_from_arduino()
+            lpodProc.currData = sensorData
+            if sensorData:
+                newGarageState = sensorData[0]
+                newTrapState = sensorData[1]
+                phValue = sensorData[2]
+                condValue = sensorData[3]
+                ussValue = sensorData[4]
                 print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
-            # Process data and update database
-            lpodProc.update_db(location=u'Toronto', ph=round(phValue, 2), conductivity=round(condValue, 2),
-                               garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 2})
+                # Process data and update database
+                lpodProc.update_db(location=u'Toronto', ph=round(phValue, 2), conductivity=round(condValue, 2),
+                                   garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 2})
     except Exception as e:
         logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
 

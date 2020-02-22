@@ -29,7 +29,7 @@ class LilypodRoutine():
         # Filtering state
         self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 75.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
-        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 75.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2.0]
+        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 75.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2.0]
 
     def updateState(self, state):
         self.currentRoutineStep = self.routineLookUp[RoutineStates[state].value]

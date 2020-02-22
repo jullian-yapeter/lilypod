@@ -115,7 +115,7 @@ void loop(){
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
-        ussValue = 10.10;
+        ussValue = 1.0;
     }
     if (checkequals(ledState,0.0)){
         // shine blue
