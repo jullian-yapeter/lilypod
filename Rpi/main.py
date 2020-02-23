@@ -3,7 +3,7 @@ from serialcomm.serialcomm import Serialcomm
 # from spectrometer import spectrometer
 from logs.logs import logs
 from routine import LilypodRoutine
-
+from cellular.geolocation import Geolocation
 from multiprocessing import Process
 # import random
 import time
@@ -11,11 +11,12 @@ import time
 
 class LpodProc():
     def __init__(self, name, baudrate=9600, slaveport='/dev/tty.usbmodem1421'):
-        self.lilypod = LilypodObject(name=name, location=u'Waterloo', ph=0.0, conductivity=0.0, garbageLevel=0.0,
+        self.lilypod = LilypodObject(name=name, location=[0.0, 0.0], ph=0.0, conductivity=0.0, garbageLevel=0.0,
                                      spectroscopy={'low': 0, 'high': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(baudrate=baudrate, slaveport=slaveport)
         self.routine = LilypodRoutine()
+        self.geolocation = Geolocation()
         self.currData = None
 
     def update_db(self, name=None, location=None, ph=None, conductivity=None, garbageLevel=None, spectroscopy=None):
@@ -60,7 +61,7 @@ class LpodProc():
         if currElapsedTime < self.routine.timingLookUp[prevState]:
             self.routine.updateState(prevState)
             commands = self.routine.currentRoutineStep
-            return currElapsedTime, state, commands
+            return currElapsedTime, prevState, commands
         else:
             # newGarageState = sensorData[0]
             # newTrapState = sensorData[1]
@@ -78,7 +79,7 @@ class LpodProc():
                 newState = 'CHECKGARBAGE'
             self.routine.updateState(newState)
             commands = self.routine.currentRoutineStep
-            return 0, state, commands
+            return 0, newState, commands
 
     def send_to_arduino(self, commands):
         self.serialcomm.commManager.sendQueue.put(commands)
@@ -133,8 +134,9 @@ def main():
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
                 if prevState == 'SAMPLESTATE':
-                    lpodProc.update_db(location=u'London', ph=round(phValue, 2), conductivity=round(condValue, 2),
-                                       garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 3})
+                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation, ph=round(phValue, 2),
+                                       conductivity=round(condValue, 2), garbageLevel=round(ussValue, 2),
+                                       spectroscopy={'low': 2, 'high': 3})
             procTime = time.time() - startProcTime
 
     except Exception as e:
