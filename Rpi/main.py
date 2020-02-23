@@ -51,16 +51,34 @@ class LpodProc():
         commands = self.routine.currentRoutineStep
         return commands
 
-    def generateCommandsData(self, sensorData):
+    def generateCommandsData(self, sensorData, prevState, currElapsedTime):
+        # COMMANDS FORMAT:
+        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState,
+        #             trapDir, phState, condState, ussState, ledStrip]
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
-        newGarageState = sensorData[0]
-        newTrapState = sensorData[1]
-        phValue = sensorData[2]
-        condValue = sensorData[3]
-        ussValue = sensorData[4]
-        
-        raise NotImplementedError()
+        if currElapsedTime < self.routine.timingLookUp[prevState]:
+            self.routine.updateState(prevState)
+            commands = self.routine.currentRoutineStep
+            return currElapsedTime, state, commands
+        else:
+            # newGarageState = sensorData[0]
+            # newTrapState = sensorData[1]
+            # phValue = sensorData[2]
+            # condValue = sensorData[3]
+            ussValue = sensorData[4]
+            if prevState == 'CHECKGARBAGE':
+                if round(ussValue, 2) == 1.0:
+                    newState = 'GARBAGEFULL'
+                else:
+                    newState = 'FILTERSTATE'
+            if prevState == 'FILTERSTATE':
+                newState = 'SAMPLESTATE'
+            if prevState == 'SAMPLESTATE':
+                newState = 'CHECKGARBAGE'
+            self.routine.updateState(newState)
+            commands = self.routine.currentRoutineStep
+            return 0, state, commands
 
     def send_to_arduino(self, commands):
         self.serialcomm.commManager.sendQueue.put(commands)
@@ -91,11 +109,17 @@ def main():
     time.sleep(0.1)
 
     # This represents the main functions of the Raspberry Pi
+    prevState = 'CHECKGARBAGE'
+    prevTime = 0
+    procTime = 0
+    sensorData = []
     start = time.time()
     try:
         while (time.time() - start < 10):
-            commands = lpodProc.generateDummyCommandsData()
+            # commands = lpodProc.generateDummyCommandsData()
+            prevTime, prevState, commands = lpodProc.generateCommandsData(sensorData, prevState, prevTime + procTime)
             lpodProc.send_to_arduino(commands)
+            startProcTime = time.time()
             # print(commands)
             sensorData = lpodProc.read_from_arduino()
             lpodProc.currData = sensorData
@@ -108,8 +132,11 @@ def main():
                 print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
-                lpodProc.update_db(location=u'London', ph=round(phValue, 2), conductivity=round(condValue, 2),
-                                   garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 3})
+                if prevState == 'SAMPLESTATE':
+                    lpodProc.update_db(location=u'London', ph=round(phValue, 2), conductivity=round(condValue, 2),
+                                       garbageLevel=round(ussValue, 2), spectroscopy={'low': 2, 'high': 3})
+            procTime = time.time() - startProcTime
+
     except Exception as e:
         logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
 

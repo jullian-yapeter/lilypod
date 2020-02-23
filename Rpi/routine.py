@@ -14,7 +14,13 @@ class LilypodRoutine():
         self.lengthOfRoutine = 4
         self.currentRoutineStep = []
         self.routineLookUp = [None]*self.lengthOfRoutine
+        self.timingLookUp = {}
+        self.initializeRoutineTiming()
         self.initializeRoutineLookUp()
+
+    def initializeRoutineTiming(self):
+        # in seconds
+        self.timingLookUp = {'CHECKGARBAGE': 10, 'GARBAGEFULL': float("inf"), 'FILTERSTATE': 30, 'SAMPLESTATE': 20}
 
     def initializeRoutineLookUp(self):
         # FORMAT OF PACKAGE:
