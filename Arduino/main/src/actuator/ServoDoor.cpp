@@ -31,14 +31,14 @@ float ServoDoor::openDoor(){
     while(!isTopSwitchClosed()){
         changeServoAngle(_FORWARD);
     }
-    return 1.0
+    return 1.0;
 }
 
 float ServoDoor::closeDoor(){
     while(!isBottomSwitchClosed()){
         changeServoAngle(_BACKWARD);
     }
-    return 1.0
+    return 1.0;
 }
 
 bool ServoDoor::isTopSwitchClosed(){

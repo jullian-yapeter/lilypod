@@ -20,11 +20,11 @@ class LilypodRoutine():
 
     def initializeRoutineTiming(self):
         # in seconds
-        self.timingLookUp = {'CHECKGARBAGE': 10, 'GARBAGEFULL': float("inf"), 'FILTERSTATE': 30, 'SAMPLESTATE': 20}
+        self.timingLookUp = {'CHECKGARBAGE': 5, 'GARBAGEFULL': float("inf"), 'FILTERSTATE': 5, 'SAMPLESTATE': 5}
 
     def initializeRoutineLookUp(self):
         # FORMAT OF PACKAGE:
-        # [pumpState, pumpSpeed, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip]
+        # [pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip]
         # 0.0 means off/close/CW
         # 1.0 means on/open/CCW/outwards
         # Speed is in terms of percentage
@@ -33,9 +33,9 @@ class LilypodRoutine():
         # Garbage full state
         self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
         # Filtering state
-        self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 75.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
-        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 75.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2.0]
+        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
 
     def updateState(self, state):
         self.currentRoutineStep = self.routineLookUp[RoutineStates[state].value]

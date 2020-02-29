@@ -14,3 +14,6 @@ privatekey/
 __pycache__
 test_graph*
 *.pyc
+
+# json
+*.json

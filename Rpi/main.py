@@ -12,12 +12,12 @@ import time
 class LpodProc():
     def __init__(self, name, baudrate=9600, slaveport='/dev/tty.usbmodem1421'):
         self.lilypod = LilypodObject(name=name, location=[0.0, 0.0], ph=0.0, conductivity=0.0, garbageLevel=0.0,
-                                     spectroscopy={'low': 0, 'high': 0})
+                                     spectroscopy={'0': 0, '1': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(baudrate=baudrate, slaveport=slaveport)
         self.routine = LilypodRoutine()
         self.geolocation = Geolocation()
-        self.currData = None
+        self.currData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     def update_db(self, name=None, location=None, ph=None, conductivity=None, garbageLevel=None, spectroscopy=None):
         if name is not None:
@@ -38,13 +38,13 @@ class LpodProc():
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
     def run_spectroscopy(self):
-        raise NotImplementedError()
+        return {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
 
     def generateDummyCommandsData(self):
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
         # COMMANDS FORMAT:
-        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState,
+        # commands = [pumpState, bulbState, garageState, garageDir, trapState,
         #             trapDir, phState, condState, ussState, ledStrip]
         # FOR RANDOM COMMANDS:
         # commands = [random.random() for _ in range(self.serialcomm.messageLength)]
@@ -54,20 +54,26 @@ class LpodProc():
 
     def generateCommandsData(self, sensorData, prevState, currElapsedTime):
         # COMMANDS FORMAT:
-        # commands = [pumpState, pumpSpeed, garageState, garageDir, trapState,
+        # commands = [pumpState, bulbState, garageState, garageDir, trapState,
         #             trapDir, phState, condState, ussState, ledStrip]
+        # print("CURR ELAPSED TIME :", currElapsedTime)
+        startTime = time.time()
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
             pass
         if currElapsedTime < self.routine.timingLookUp[prevState]:
             self.routine.updateState(prevState)
             commands = self.routine.currentRoutineStep
-            return currElapsedTime, prevState, commands
+            return currElapsedTime + time.time() - startTime, prevState, commands
         else:
             # newGarageState = sensorData[0]
             # newTrapState = sensorData[1]
             # phValue = sensorData[2]
             # condValue = sensorData[3]
-            ussValue = sensorData[4]
+            try:
+                ussValue = sensorData[4]
+            except Exception as e:
+                logs.pimain.warning("USSValue was NoneType: %s", e)
+                pass
             if prevState == 'CHECKGARBAGE':
                 if round(ussValue, 2) == 1.0:
                     newState = 'GARBAGEFULL'
@@ -116,27 +122,28 @@ def main():
     sensorData = []
     start = time.time()
     try:
-        while (time.time() - start < 10):
+        while (time.time() - start < 30):
             # commands = lpodProc.generateDummyCommandsData()
-            prevTime, prevState, commands = lpodProc.generateCommandsData(sensorData, prevState, prevTime + procTime)
-            lpodProc.send_to_arduino(commands)
+            prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
             startProcTime = time.time()
+            lpodProc.send_to_arduino(commands)
             # print(commands)
             sensorData = lpodProc.read_from_arduino()
-            lpodProc.currData = sensorData
-            if sensorData:
+            if sensorData and (None not in sensorData):
+                lpodProc.currData = sensorData
                 newGarageState = sensorData[0]
                 newTrapState = sensorData[1]
                 phValue = sensorData[2]
                 condValue = sensorData[3]
                 ussValue = sensorData[4]
+                print("ROUTINE : ", prevState)
                 print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
                 if prevState == 'SAMPLESTATE':
-                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation, ph=round(phValue, 2),
+                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation(), ph=round(phValue, 2),
                                        conductivity=round(condValue, 2), garbageLevel=round(ussValue, 2),
-                                       spectroscopy={'low': 2, 'high': 3})
+                                       spectroscopy=lpodProc.run_spectroscopy())
             procTime = time.time() - startProcTime
 
     except Exception as e:

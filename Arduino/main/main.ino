@@ -69,9 +69,9 @@ void loop(){
     float commandsData[serialcomm.messageLength] = {0.0};
     serialcomm.receiveCommandsData();
     serialcomm.getCommandsData(commandsData);
-
+    //[pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip]
     float pumpState = commandsData[0];
-    float pumpSpeed = commandsData[1];
+    float bulbState = commandsData[1];
     float garageState = commandsData[2];
     float garageDir = commandsData[3];
     float trapState = commandsData[4];
@@ -90,36 +90,53 @@ void loop(){
 
     if (checkequals(pumpState,1.0)){
         // Run pump with speed = pumpSpeed
-        pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
+        // pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
     }
     else{
         // Turn off pump
-        pump.stop();
+        // pump.stop();
+    }
+    if (checkequals(bulbState,1.0)){
+        //Turn on lightbulb
+    }
+    else{
+        //Turn off lightbulb
     }
     if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir
         // update garageState to inform Rpi
         if (checkequals(garageDir, 1.0)){
-            newGarageState = garage.openDoor();
+            // newGarageState = garage.openDoor();
+            newGarageState = 1.0;
         }
         else if (checkequals(garageState, 0.0)){
-            newGarageState = garage.closeDoor();
+            // newGarageState = garage.closeDoor();
+            newGarageState = 0.0;
         }
+    }
+    else{
+        newGarageState = 2.0;
     }
     if (checkequals(trapState,1.0)){
         
         // Move trap in direction = trapDir
         // update trapState to inform Rpi
         if (checkequals(trapDir, 1.0)){
-            newTrapState = trap.openDoor();
+            // newTrapState = trap.openDoor();
+            newTrapState = 1.0;
         }
         else if (checkequals(trapDir, 0.0)){
-            newTrapState = trap.closeDoor();
+            // newTrapState = trap.closeDoor();
+            newTrapState = 0.0;
         }
+    }
+    else{
+        newTrapState = 2.0;
     }
     if (checkequals(phState,1.0)){
         // get new pH reading and store it in phValue
-        phValue = phSensor.samplePh();
+        // phValue = phSensor.samplePh();
+        phValue = 3.14;
     }
     if (checkequals(condState,1.0)){
         // get new conductivity reading and store it in phValue
@@ -127,7 +144,8 @@ void loop(){
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
-        ussValue = garbageChecker.isGarbageFull();
+        // ussValue = garbageChecker.isGarbageFull();
+        ussValue = 0.0;
     }
     if (checkequals(ledState,0.0)){
         // shine blue
