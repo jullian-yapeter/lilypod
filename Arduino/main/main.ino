@@ -69,7 +69,7 @@ void loop(){
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
     // while(true){};
-    // runRoutine();
+    runRoutine();
 }
 
 

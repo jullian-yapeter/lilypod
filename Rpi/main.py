@@ -1,3 +1,7 @@
+import sys
+import os
+import psutil
+
 from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
 # from spectrometer import spectrometer
@@ -7,6 +11,23 @@ from cellular.geolocation import Geolocation
 from multiprocessing import Process
 # import random
 import time
+
+
+def restart_program():
+    time.sleep(1)
+    print("----------------------------")
+    print("-----RESTARTING PROGRAM-----")
+    print("----------------------------")
+
+    try:
+        p = psutil.Process(os.getpid())
+        for handler in p.get_open_files() + p.connections():
+            os.close(handler.fd)
+    except Exception as e:
+        logs.pimain.error(e)
+
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 
 class LpodProc():
@@ -122,7 +143,7 @@ def main():
     sensorData = []
     start = time.time()
     try:
-        while (time.time() - start < 30):
+        while (time.time() - start < 500):
             # commands = lpodProc.generateDummyCommandsData()
             prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
             startProcTime = time.time()
@@ -145,9 +166,12 @@ def main():
                                        conductivity=round(condValue, 2), garbageLevel=round(ussValue, 2),
                                        spectroscopy=lpodProc.run_spectroscopy())
             procTime = time.time() - startProcTime
-
+        logs.pimain.error("RESTARTING PROGRAM")
+        restart_program()
     except Exception as e:
         logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
+        logs.pimain.error("RESTARTING PROGRAM")
+        restart_program()
 
     sendProc.terminate()
     recvProc.terminate()
