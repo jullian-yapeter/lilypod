@@ -11,6 +11,7 @@
 
 // Constructor /////////////////////////////////////////////////////////////////)
 
+/*
 void ServoDoor::setupDoor(int servoPin, int limSwitchTop, int limSwitchBottom){
     Servo servo;
 
@@ -23,24 +24,64 @@ void ServoDoor::setupDoor(int servoPin, int limSwitchTop, int limSwitchBottom){
     pinMode(_limSwitchTop, INPUT);
     pinMode(_limSwitchBottom, INPUT);
 }
+*/
+
+void ServoDoor::setupTrapDoor(int servoPin, int limSwitch, int closeAngle){
+    Servo servo;
+
+    _servo = servo;
+    _servoPin = servoPin;
+    _limSwitch = limSwitch;
+    _closeAngle = closeAngle;
+    _useLimSwitch = true;
+
+    _servo.attach(_servoPin);
+    pinMode(_limSwitch, INPUT);
+}
+
+void ServoDoor::setupGarageDoor(int servoPin, int openAngle, int closeAngle){
+    Servo servo;
+
+    _servo = servo;
+    _servoPin = servoPin;
+    _openAngle = openAngle;
+    _closeAngle = closeAngle;
+    _useLimSwitch = false;
+
+    _servo.attach(_servoPin);
+}
 
 // Public Methods //////////////////////////////////////////////////////////////
 // Assume opening the garage requires CW rotation
 float ServoDoor::openDoor(){
     // If top limit switch open, keep servo moving in a direction.
-    while(!isTopSwitchClosed()){
-        changeServoAngle(_FORWARD);
+    if (!_useLimSwitch){
+        _servo.write(_openAngle);
+        return 1.0;
+    }else{
+        int startTime = millis();
+        int currTime = millis();
+        while(!isLimSwitchClosed()){
+            changeServoAngle(_FORWARD);
+            currTime  = millis();
+            if (currTime - startTime > _TIMEOUT*1000){
+                Serial.println("Time out on trap door open");
+                return 0.0;
+            }
+        }
+        return 1.0;
     }
-    return 1.0;
+    Serial.println("Door opened");
+    return 0.0;
+    
 }
 
 float ServoDoor::closeDoor(){
-    while(!isBottomSwitchClosed()){
-        changeServoAngle(_BACKWARD);
-    }
+    _servo.write(_closeAngle);
     return 1.0;
 }
 
+/*
 bool ServoDoor::isTopSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitchTop) == LOW) && (_topFlag == 0)){
@@ -79,6 +120,29 @@ bool ServoDoor::isBottomSwitchClosed(){
     if (digitalRead(_limSwitchBottom) == LOW){
         isClosed = true;
     }else if (digitalRead(_limSwitchBottom) == HIGH){
+        isClosed = false;
+    }
+    return isClosed;
+}
+
+*/
+
+bool ServoDoor::isLimSwitchClosed(){
+    bool isClosed = false;
+    if ((digitalRead(_limSwitch) == LOW) && (_bottomFlag == 0)){
+        Serial.println("Garage door completely open");
+        _bottomFlag = 1;
+        delay(20);
+    }
+    if((digitalRead(_limSwitch) == HIGH) && (_bottomFlag == 1)){
+        Serial.println("Garage door not completely open");
+        _bottomFlag = 0;
+        delay(20);
+    }
+    digitalWrite(_limSwitch, HIGH);
+    if (digitalRead(_limSwitch) == LOW){
+        isClosed = true;
+    }else if (digitalRead(_limSwitch) == HIGH){
         isClosed = false;
     }
     return isClosed;

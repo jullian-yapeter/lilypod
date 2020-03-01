@@ -27,11 +27,11 @@ const int motorEn = 2;
 
 // Servo doors
 const int servoGaragePin = 4;
-const int garageLimSwitchTop = 30;  //8
-const int garageLimSwitchBottom = 31;  //9
+// const int garageLimSwitchTop = 30;  //8
+// const int garageLimSwitchBottom = 31;  //9
 const int servoTrapPin = 5;  // untested
-const int trapLimSwitchTop = 34; // untested
-const int trapLimSwitchBottom = 35; // untested
+const int trapLimSwitch = 31; // untested
+// const int trapLimSwitchBottom = 35; // untested
 
 // Sonar
 const int trigPin = 22;
@@ -54,14 +54,17 @@ bool checkequals(float a, float b){
 void setup(){
     Serial.begin(9600);
     pump.setupMotor(motorPin1, motorPin2, motorEn);
-    garage.setupDoor(servoGaragePin, garageLimSwitchTop, garageLimSwitchBottom);
-    trap.setupDoor(servoTrapPin, trapLimSwitchTop, trapLimSwitchBottom);
+    garage.setupGarageDoor(servoGaragePin, 180, 0);
+    trap.setupTrapDoor(servoTrapPin, trapLimSwitch, 0);
     garbageChecker.setupSonar(trigPin, echoPin);
 }
 
 void loop(){
     // phSensor.samplePh();
     // testMotor.testFunction();
+    // garage.closeDoor();
+    // trap.openDoor();
+    // trap.closeDoor();
     //  garage.closeDoor();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
