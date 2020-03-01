@@ -62,10 +62,15 @@ void setup(){
 void loop(){
     // phSensor.samplePh();
     // testMotor.testFunction();
-    // garage.closeDoor();
+    //  garage.closeDoor();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
+    // while(true){};
+    // runRoutine();
+}
 
+
+void runRoutine(){
     float commandsData[serialcomm.messageLength] = {0.0};
     serialcomm.receiveCommandsData();
     serialcomm.getCommandsData(commandsData);

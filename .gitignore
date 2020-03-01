@@ -17,3 +17,6 @@ test_graph*
 
 # json
 *.json
+
+# VSCODE
+.vscode
