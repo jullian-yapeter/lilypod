@@ -10,3 +10,5 @@ class Graph():
 
     def drawGraph(self):
         plt.scatter(self.xvals, self.yvals)
+
+class 
