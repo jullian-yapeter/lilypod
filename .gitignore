@@ -17,6 +17,7 @@ test_graph*
 
 # json
 *.json
+!arduino.json
 
 # VSCODE
 .vscode
