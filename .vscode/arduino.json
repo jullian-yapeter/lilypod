@@ -1,7 +1,7 @@
 {
     "sketch": "Arduino/main/main.ino",
-    "port": "/dev/cu.usbmodem144301",
-    "board": "arduino:avr:megaADK",
+    "port": "/dev/cu.usbmodem144401",
+    "board": "arduino:avr:uno",
     "output": "arduino_build",
     "debugger": "jlink"
 }

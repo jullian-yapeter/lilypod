@@ -16,7 +16,8 @@
 // global variables
 const float EPSILON = 0.0001;
 // Pin intializations start---------------------
-
+/*
+// Mega pins
 // pH Sensor
 const int pHSensorPin = A0;
 
@@ -36,6 +37,43 @@ const int trapLimSwitch = 31; // untested
 // Sonar
 const int trigPin = 22;
 const int echoPin = 23;  // Not using 13 because 13 connects to onboard LED
+
+const int bulbPin = 36
+// Mega pins end
+*/
+
+// UNO pins
+// pH Sensor (1 analog)
+const int pHSensorPin = A0;
+
+// Pumps (1 pwm + 2 digital)
+const int motorPin1 = 13;  // 24
+const int motorPin2 = 12;  // 25
+const int motorEn = 3;
+
+// Servo doors (2 pwm + 1 digital)
+const int servoGaragePin = 5;
+const int servoTrapPin = 6;  // untested
+const int trapLimSwitch = 4; // untested
+
+
+// Sonar (digital)
+const int trigPin = 7;
+const int echoPin = 8;  // Not using 13 because 13 connects to onboard LED
+
+// Spectrometer bulb (digital)
+const int bulbPin = 2;
+
+// LED Strips (3 PWM)
+const int bluePin = 9;
+const int redPin = 10;
+const int greenPin = 11;
+
+// Conductivity (1 analog)
+const int conductPin = A1;
+
+
+// Uno Pins stop
 
 // Pin intializations end---------------------
 
@@ -62,6 +100,7 @@ void setup(){
 void loop(){
     // phSensor.samplePh();
     // testMotor.testFunction();
+    // garage.testFunction();
     // garage.closeDoor();
     // trap.openDoor();
     // trap.closeDoor();
@@ -69,7 +108,7 @@ void loop(){
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
     // while(true){};
-    runRoutine();
+     runRoutine();
 }
 
 
@@ -112,7 +151,7 @@ void runRoutine(){
     }
     else{
         //Turn off lightbulb
-        //  Serial.println("Turning off spectrometer light");
+        // Serial.println("Turning off spectrometer light");
     }
     if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir

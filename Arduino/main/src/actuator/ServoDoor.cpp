@@ -85,12 +85,12 @@ float ServoDoor::closeDoor(){
 bool ServoDoor::isTopSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitchTop) == LOW) && (_topFlag == 0)){
-        Serial.println("Garage door completely closed");
+        // Serial.println("Garage door completely closed");
         _topFlag = 1;
         delay(20);
     }
     if((digitalRead(_limSwitchTop) == HIGH) && (_topFlag == 1)){
-        Serial.println("Garage door not completely closed");
+        // Serial.println("Garage door not completely closed");
         _topFlag = 0;
         delay(20);
     }
@@ -107,12 +107,12 @@ bool ServoDoor::isTopSwitchClosed(){
 bool ServoDoor::isBottomSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitchBottom) == LOW) && (_bottomFlag == 0)){
-        Serial.println("Garage door completely open");
+        // Serial.println("Garage door completely open");
         _bottomFlag = 1;
         delay(20);
     }
     if((digitalRead(_limSwitchBottom) == HIGH) && (_bottomFlag == 1)){
-        Serial.println("Garage door not completely open");
+        // Serial.println("Garage door not completely open");
         _bottomFlag = 0;
         delay(20);
     }
@@ -158,34 +158,34 @@ void ServoDoor::changeServoAngle(int direction){
         newAngle = currAngle - 5;
     }
     if (newAngle >= _maxAngle){
-        // Serial.println("Max angle reached");
+        // // Serial.println("Max angle reached");
         newAngle = _maxAngle;
     } else if (newAngle <= _minAngle){
         newAngle = _minAngle;
     }
-    // Serial.print("New Angle: ");
-    // Serial.print(newAngle);
-    // Serial.print("\n");
+    // // Serial.print("New Angle: ");
+    // // Serial.print(newAngle);
+    // // Serial.print("\n");
     _servo.write(newAngle);
     delay(200);
 }
 
 void ServoDoor::testFunction(){
     // Make servo go to 0 degrees 
-    Serial.println("In test function");
+    // Serial.println("In test function");
     _servo.write(0);
-    Serial.println("moved 0");
+    // Serial.println("moved 0");
     delay(2000); 
     // Make servo go to 90 degrees 
     _servo.write(90);
-    Serial.println("moved 90");
+    // Serial.println("moved 90");
     delay(2000); 
     // Make servo go to 180 degrees 
     _servo.write(-90); 
-    Serial.println("moved -90");
+    // Serial.println("moved -90");
     delay(2000);
     _servo.write(0);
-    Serial.println("moved 0");
+    // Serial.println("moved 0");
     delay(2000);
-    Serial.println("Exiting test function");
+    // Serial.println("Exiting test function");
 }
