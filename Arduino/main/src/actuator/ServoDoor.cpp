@@ -65,13 +65,13 @@ float ServoDoor::openDoor(){
             changeServoAngle(_FORWARD);
             currTime  = millis();
             if (currTime - startTime > _TIMEOUT*1000){
-                Serial.println("Time out on trap door open");
+                // Serial.println("Time out on trap door open");
                 return 0.0;
             }
         }
         return 1.0;
     }
-    Serial.println("Door opened");
+    // Serial.println("Door opened");
     return 0.0;
     
 }
@@ -130,12 +130,12 @@ bool ServoDoor::isBottomSwitchClosed(){
 bool ServoDoor::isLimSwitchClosed(){
     bool isClosed = false;
     if ((digitalRead(_limSwitch) == LOW) && (_bottomFlag == 0)){
-        Serial.println("Garage door completely open");
+        // Serial.println("Garage door completely open");
         _bottomFlag = 1;
         delay(20);
     }
     if((digitalRead(_limSwitch) == HIGH) && (_bottomFlag == 1)){
-        Serial.println("Garage door not completely open");
+        // Serial.println("Garage door not completely open");
         _bottomFlag = 0;
         delay(20);
     }
@@ -163,9 +163,9 @@ void ServoDoor::changeServoAngle(int direction){
     } else if (newAngle <= _minAngle){
         newAngle = _minAngle;
     }
-    Serial.print("New Angle: ");
-    Serial.print(newAngle);
-    Serial.print("\n");
+    // Serial.print("New Angle: ");
+    // Serial.print(newAngle);
+    // Serial.print("\n");
     _servo.write(newAngle);
     delay(200);
 }

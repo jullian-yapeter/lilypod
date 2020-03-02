@@ -11,14 +11,17 @@ void Motor::setupMotor(int pin1, int pin2, int pinEn){
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
     pinMode(_pinEn, OUTPUT);
+    // Serial.println("Motor setup complete");
 }
 
 void Motor::start(int speed, int direction){
+    // Serial.println("Running pump");
     setDirection(direction);
     setSpeed(speed);
 }
 
 void Motor::stop(){
+    // Serial.println("Stopping pump");
     setSpeed(0);
     digitalWrite(_pin1, LOW);
     digitalWrite(_pin2, LOW);
@@ -38,9 +41,9 @@ void Motor::setDirection(int direction){
 
 void Motor::setSpeed(int speed){
     int pwmOutput = getPwmOutput(speed);
-    Serial.print("pwmOutput: ");
-    Serial.print(pwmOutput);
-    Serial.print("\n");
+    // Serial.print("pwmOutput: ");
+    // Serial.print(pwmOutput);
+    // Serial.print("\n");
     analogWrite(_pinEn, (int) pwmOutput);  // Send PWM signal to L298N Enable pin
 }
 

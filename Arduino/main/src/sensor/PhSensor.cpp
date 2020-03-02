@@ -19,9 +19,9 @@ PhSensor::PhSensor(int PhSensorPin){
 float PhSensor::samplePh(void){
     float avgValue = readAvgAnalogValue();
     float pHValue = convertAnalogtoPh(avgValue);
-    Serial.print("pH Value: ");
-    Serial.print(pHValue);
-    Serial.print("\n");
+    // Serial.print("pH Value: ");
+    // Serial.print(pHValue);
+    // Serial.print("\n");
     return pHValue;
 }
 

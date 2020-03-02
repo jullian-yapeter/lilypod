@@ -96,29 +96,33 @@ void runRoutine(){
     float condValue = 0.0;
     float ussValue = 0.0;
 
-    if (checkequals(pumpState,1.0)){
+    int pumpSpeed = 100;
+
+    if (checkequals(pumpState, 1.0)){
         // Run pump with speed = pumpSpeed
-        // pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
+        pump.start((int) (pumpSpeed + 0.5), 1);  // 1 for forward
     }
     else{
         // Turn off pump
-        // pump.stop();
+        pump.stop();
     }
     if (checkequals(bulbState,1.0)){
         //Turn on lightbulb
+        // Serial.println("Turning on spectrometer light");
     }
     else{
         //Turn off lightbulb
+        //  Serial.println("Turning off spectrometer light");
     }
     if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir
         // update garageState to inform Rpi
         if (checkequals(garageDir, 1.0)){
-            // newGarageState = garage.openDoor();
+            newGarageState = garage.openDoor();
             newGarageState = 1.0;
         }
         else if (checkequals(garageState, 0.0)){
-            // newGarageState = garage.closeDoor();
+            newGarageState = garage.closeDoor();
             newGarageState = 0.0;
         }
     }
@@ -130,11 +134,11 @@ void runRoutine(){
         // Move trap in direction = trapDir
         // update trapState to inform Rpi
         if (checkequals(trapDir, 1.0)){
-            // newTrapState = trap.openDoor();
+            newTrapState = trap.openDoor();
             newTrapState = 1.0;
         }
         else if (checkequals(trapDir, 0.0)){
-            // newTrapState = trap.closeDoor();
+            newTrapState = trap.closeDoor();
             newTrapState = 0.0;
         }
     }
@@ -143,8 +147,7 @@ void runRoutine(){
     }
     if (checkequals(phState,1.0)){
         // get new pH reading and store it in phValue
-        // phValue = phSensor.samplePh();
-        phValue = 3.14;
+        phValue = phSensor.samplePh();
     }
     if (checkequals(condState,1.0)){
         // get new conductivity reading and store it in phValue
@@ -152,20 +155,23 @@ void runRoutine(){
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
-        // ussValue = garbageChecker.isGarbageFull();
-        ussValue = 0.0;
+        ussValue = garbageChecker.isGarbageFull();
     }
     if (checkequals(ledState,0.0)){
+        // Serial.println("Shine blue");
         // shine blue
     }
     else if (checkequals(ledState,1.0)){
         // shine green
+        // Serial.println("Shine green");
     }
     else if (checkequals(ledState,2.0)){
         // shine yellow
+        // Serial.println("Shine yellow");
     }
     else if (checkequals(ledState,3.0)){
         // shine red
+        // Serial.println("Shine red");
     }
 
 
