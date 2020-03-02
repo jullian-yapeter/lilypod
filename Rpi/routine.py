@@ -6,6 +6,7 @@ class RoutineStates(Enum):
     GARBAGEFULL = 1
     FILTERSTATE = 2
     SAMPLESTATE = 3
+    MALFUNCTION = 4
 
 
 class LilypodRoutine():
@@ -20,7 +21,7 @@ class LilypodRoutine():
 
     def initializeRoutineTiming(self):
         # in seconds
-        self.timingLookUp = {'CHECKGARBAGE': 5, 'GARBAGEFULL': float("inf"), 'FILTERSTATE': 5, 'SAMPLESTATE': 10}
+        self.timingLookUp = {'CHECKGARBAGE': 5, 'GARBAGEFULL': float("inf"), 'FILTERSTATE': 5, 'SAMPLESTATE': 10, 'MALFUNCTION': float('inf')}
 
     def initializeRoutineLookUp(self):
         # FORMAT OF PACKAGE:
@@ -36,6 +37,8 @@ class LilypodRoutine():
         self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
         self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
+         # Malfunction state
+        self.routineLookUp[RoutineStates.MALFUNCTION.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
 
     def updateState(self, state):
         self.currentRoutineStep = self.routineLookUp[RoutineStates[state].value]

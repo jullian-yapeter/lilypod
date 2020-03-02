@@ -88,10 +88,10 @@ class LpodProc():
             return currElapsedTime + time.time() - startTime, prevState, commands
         else:
             # newGarageState = sensorData[0]
-            # newTrapState = sensorData[1]
             # phValue = sensorData[2]
             # condValue = sensorData[3]
             try:
+                newTrapState = sensorData[1]
                 ussValue = sensorData[4]
             except Exception as e:
                 logs.pimain.warning("USSValue was NoneType: %s", e)
@@ -102,7 +102,10 @@ class LpodProc():
                 else:
                     newState = 'FILTERSTATE'
             if prevState == 'FILTERSTATE':
-                newState = 'SAMPLESTATE'
+                if round(newTrapState, 2) == 1.0:
+                    newState = 'SAMPLESTATE'
+                else:
+                    newState = 'MALFUNCTION'
             if prevState == 'SAMPLESTATE':
                 newState = 'CHECKGARBAGE'
             self.routine.updateState(newState)

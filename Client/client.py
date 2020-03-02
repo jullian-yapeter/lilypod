@@ -100,6 +100,9 @@ class Dashboard():
     def updateSpectroscopyData(self):
         spectroscopyData = self.getData('spectroscopy')
         spectroscopyKeys = list(spectroscopyData.keys())
+        spectroscopyKeys = [int(i) for i in spectroscopyKeys]
+        spectroscopyKeys.sort()
+        spectroscopyKeys = [str(i) for i in spectroscopyKeys]
         spectroscopyVals = [spectroscopyData[k] for k in spectroscopyKeys]
         return {'x': spectroscopyKeys, 'y': spectroscopyVals, 'mark': 'bo-'}
 
