@@ -77,6 +77,12 @@ const int conductPin = A1;
 
 // Pin intializations end---------------------
 
+float newGarageState = 0.0;
+float newTrapState = 0.0;
+float phValue = 0.0;
+float condValue = 0.0;
+float ussValue = 0.0;
+
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
 
@@ -129,11 +135,6 @@ void runRoutine(){
     float ledState = commandsData[9];
 
     // Do stuff with commands: get sensor data and run actuators
-    float newGarageState = 0.0;
-    float newTrapState = 0.0;
-    float phValue = 0.0;
-    float condValue = 0.0;
-    float ussValue = 0.0;
 
     int pumpSpeed = 100;
 

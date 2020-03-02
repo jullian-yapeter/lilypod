@@ -9,6 +9,7 @@ from logs.logs import logs
 from routine import LilypodRoutine
 from cellular.geolocation import Geolocation
 from multiprocessing import Process
+import numpy as np
 # import random
 import time
 
@@ -59,7 +60,7 @@ class LpodProc():
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
     def run_spectroscopy(self):
-        return {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+        return {"0": np.random.uniform(0, 100), "1": np.random.uniform(0, 100), "2": np.random.uniform(0, 100), "3": np.random.uniform(0, 100), "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": np.random.uniform(0, 100)}
 
     def generateDummyCommandsData(self):
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
@@ -123,7 +124,7 @@ class LpodProc():
 
 def main():
     logs.pimain.info("LILYPOD MAIN START")
-    lpodProc = LpodProc(name=u'lilypod_two', baudrate=9600, slaveport='/dev/tty.usbmodem1411')
+    lpodProc = LpodProc(name=u'lilypod_two', baudrate=9600, slaveport='/dev/cu.usbmodem144401')
     # Socket version for debugging
     # sendProc = Process(target=lpodProc.serialcomm.socket_send)
     # recvProc = Process(target=lpodProc.serialcomm.socket_recv)
