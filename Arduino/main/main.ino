@@ -84,6 +84,7 @@ float newTrapState = 0.0;
 float phValue = 0.0;
 float condValue = 0.0;
 float ussValue = 0.0;
+float newBulbState = 0.0;
 
 Conductivity condSensor;
 PhSensor phSensor(pHSensorPin);
@@ -236,6 +237,7 @@ void runRoutine(){
     sensorData[2] = phValue;
     sensorData[3] = condValue;
     sensorData[4] = ussValue;
+    sensorData[5] = newBulbState;
 
     serialcomm.setSensorData(sensorData);
     serialcomm.sendSensorData();
