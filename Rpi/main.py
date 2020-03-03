@@ -41,9 +41,11 @@ class LpodProc():
         self.geolocation = Geolocation()
         self.currData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    def update_db(self, name=None, location=None, ph=None, conductivity=None, garbageLevel=None, spectroscopy=None):
+    def update_db(self, name=None, timestamp=None, location=None, ph=None, conductivity=None, garbageLevel=None, spectroscopy=None):
         if name is not None:
             self.lilypod.name = name
+        if timestamp is not None:
+            self.lilypod.timestamp = timestamp
         if location is not None:
             self.lilypod.location = location
         if ph is not None:
