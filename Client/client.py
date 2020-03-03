@@ -18,6 +18,7 @@ class LilypodFirestoreClient(object):
         db = firestore.client()
         self.dbRef = db.collection(dbName)
         self.lilypodName = lilypodName
+        self.prevDoc = None
 
     # def read_from_db(self):
     #     try:
@@ -36,7 +37,11 @@ class LilypodFirestoreClient(object):
             # docRef = self.dbRef.document(docName)
             # doc = docRef.get()
             for doc in docs:
-                return doc.to_dict()
+                if doc != self.prevDoc:
+                    self.prevDoc = doc
+                    return doc.to_dict()
+                else:
+                    return None
         except gc_exceptions.NotFound:
             print('DOC NOT FOUND')
 
@@ -77,13 +82,19 @@ class Dashboard():
     def updateDashboard(self):
         running = True
         while running:
-            spectroscopyChart = self.createChart('Spectrometry', self.updateSpectroscopyData(), 1)
-            phChart = self.createChart('pH', self.updatePhData(), 2)
-            condChart = self.createChart('Conductivity', self.updateCondData(), 3)
             self.screen.blit(self.title, self.titlebox)
-            self.screen.blit(spectroscopyChart.surface, spectroscopyChart.location)
-            self.screen.blit(phChart.surface, phChart.location)
-            self.screen.blit(condChart.surface, condChart.location)
+            spectroscopyChartData = self.updateSpectroscopyData()
+            phChartData = self.updatePhData()
+            condChartData = self.updateCondData()
+            if spectroscopyChartData is not None:
+                spectroscopyChart = self.createChart('Spectrometry', spectroscopyChartData, 1)
+                self.screen.blit(spectroscopyChart.surface, spectroscopyChart.location)
+            if phChartData is not None:
+                phChart = self.createChart('pH', phChartData, 2)
+                self.screen.blit(phChart.surface, phChart.location)
+            if condChartData is not None:
+                condChart = self.createChart('Conductivity', condChartData, 3)
+                self.screen.blit(condChart.surface, condChart.location)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -107,28 +118,40 @@ class Dashboard():
 
     def updateSpectroscopyData(self):
         spectroscopyData = self.getData('spectroscopy')
-        spectroscopyKeys = list(spectroscopyData.keys())
-        spectroscopyKeys = [int(i) for i in spectroscopyKeys]
-        spectroscopyKeys.sort()
-        spectroscopyKeys = [str(i) for i in spectroscopyKeys]
-        spectroscopyVals = [spectroscopyData[k] for k in spectroscopyKeys]
-        return {'x': spectroscopyKeys, 'y': spectroscopyVals, 'mark': 'bo-'}
+        if spectroscopyData is not None:
+            spectroscopyKeys = list(spectroscopyData.keys())
+            spectroscopyKeys = [int(i) for i in spectroscopyKeys]
+            spectroscopyKeys.sort()
+            spectroscopyKeys = [str(i) for i in spectroscopyKeys]
+            spectroscopyVals = [spectroscopyData[k] for k in spectroscopyKeys]
+            return {'x': spectroscopyKeys, 'y': spectroscopyVals, 'mark': 'bo-'}
+        else:
+            return None
 
     def updatePhData(self):
         phData = self.getData('ph')
-        self.phMemory.insert(0, phData)
-        self.phMemory.pop()
-        return {'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'y': self.phMemory, 'mark': 'g+-'}
+        if phData is not None:
+            self.phMemory.insert(0, phData)
+            self.phMemory.pop()
+            return {'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'y': self.phMemory, 'mark': 'g+-'}
+        else:
+            return None
 
     def updateCondData(self):
         condData = self.getData('conductivity')
-        self.condMemory.insert(0, condData)
-        self.condMemory.pop()
-        return {'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'y': self.condMemory, 'mark': 'rx-'}
+        if condData is not None:
+            self.condMemory.insert(0, condData)
+            self.condMemory.pop()
+            return {'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'y': self.condMemory, 'mark': 'rx-'}
+        else:
+            return None
 
     def getData(self, attribute):
         data = self.lilypodFirestore.read_from_db()
-        return data[attribute]
+        if data is not None:
+            return data[attribute]
+        else:
+            return None
 
 
 def main():
