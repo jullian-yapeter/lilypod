@@ -5,6 +5,8 @@
 #include "src/sensor/Sonar.h"
 #include "src/actuator/Motor.h"
 #include "src/actuator/ServoDoor.h"
+#include "src/actuator/LedStrip.h"
+#include "src/actuator/LightBulb.h"
 #include "src/Serialcomm.h"
 
 // by Team Lilypod <http://www.projectlilypod.com>
@@ -82,6 +84,7 @@ float newTrapState = 0.0;
 float phValue = 0.0;
 float condValue = 0.0;
 float ussValue = 0.0;
+float newBulbState = 0.0;
 
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
@@ -90,6 +93,8 @@ Motor pump;
 ServoDoor garage;
 ServoDoor trap;
 Sonar garbageChecker;
+LedStrip ledStrip;
+LightBulb lightBulb;
 
 bool checkequals(float a, float b){
     return (fabs(a - b) < EPSILON);
@@ -101,6 +106,8 @@ void setup(){
     garage.setupGarageDoor(servoGaragePin, 180, 0);
     trap.setupTrapDoor(servoTrapPin, trapLimSwitch, 0);
     garbageChecker.setupSonar(trigPin, echoPin);
+    ledStrip.setupStrip(redPin, greenPin, bluePin);
+    lightBulb.setupLightBulb(bulbPin);
 }
 
 void loop(){
@@ -113,6 +120,8 @@ void loop(){
     //  garage.closeDoor();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
+    // ledStrip.testFunction();
+    // LightBulb.testFunction();
     // while(true){};
      runRoutine();
 }
@@ -149,10 +158,12 @@ void runRoutine(){
     if (checkequals(bulbState,1.0)){
         //Turn on lightbulb
         // Serial.println("Turning on spectrometer light");
+        newBulbState = lightBulb.turnOn();
     }
     else{
         //Turn off lightbulb
         // Serial.println("Turning off spectrometer light");
+        newBulbState = lightBulb.turnOff();
     }
     if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir
@@ -198,20 +209,20 @@ void runRoutine(){
         ussValue = garbageChecker.isGarbageFull();
     }
     if (checkequals(ledState,0.0)){
-        // Serial.println("Shine blue");
         // shine blue
+        ledStrip.shineBlue();
     }
     else if (checkequals(ledState,1.0)){
         // shine green
-        // Serial.println("Shine green");
+        ledStrip.shineGreen();
     }
     else if (checkequals(ledState,2.0)){
         // shine yellow
-        // Serial.println("Shine yellow");
+        ledStrip.shineWhite();
     }
     else if (checkequals(ledState,3.0)){
         // shine red
-        // Serial.println("Shine red");
+        ledStrip.shineRed();
     }
 
 
@@ -223,6 +234,7 @@ void runRoutine(){
     sensorData[2] = phValue;
     sensorData[3] = condValue;
     sensorData[4] = ussValue;
+    sensorData[5] = newBulbState;
 
     serialcomm.setSensorData(sensorData);
     serialcomm.sendSensorData();
