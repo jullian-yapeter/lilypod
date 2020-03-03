@@ -33,7 +33,7 @@ def restart_program():
 
 class LpodProc():
     def __init__(self, name, baudrate=9600, slaveport='/dev/tty.usbmodem1421'):
-        self.lilypod = LilypodObject(name=name, location=[0.0, 0.0], ph=0.0, conductivity=0.0, garbageLevel=0.0,
+        self.lilypod = LilypodObject(name=name, timestamp=0, location=[0.0, 0.0], ph=0.0, conductivity=0.0, garbageLevel=0.0,
                                      spectroscopy={'0': 0, '1': 0})
         self.lilypodFirestore = LilypodFirestore(dbName=u'lilypods')
         self.serialcomm = Serialcomm(baudrate=baudrate, slaveport=slaveport)
@@ -166,9 +166,9 @@ def main():
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
                 if prevState == 'SAMPLESTATE':
-                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation(), ph=round(phValue, 2),
-                                       conductivity=round(condValue, 2), garbageLevel=round(ussValue, 2),
-                                       spectroscopy=lpodProc.run_spectroscopy())
+                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation(), timestamp=time.time(),
+                                       ph=round(phValue, 2), conductivity=round(condValue, 2),
+                                       garbageLevel=round(ussValue, 2), spectroscopy=lpodProc.run_spectroscopy())
             procTime = time.time() - startProcTime
         logs.pimain.error("RESTARTING PROGRAM")
         restart_program()
