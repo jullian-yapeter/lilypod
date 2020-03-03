@@ -12,7 +12,7 @@ class RoutineStates(Enum):
 class LilypodRoutine():
 
     def __init__(self):
-        self.lengthOfRoutine = 4
+        self.lengthOfRoutine = 5
         self.currentRoutineStep = []
         self.routineLookUp = [None]*self.lengthOfRoutine
         self.timingLookUp = {}
