@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import google.cloud.exceptions as gc_exceptions
 
-# from logs.logs import logs
+from logs.logs import logs
 
 
 class LilypodFirestore(object):
@@ -16,7 +16,7 @@ class LilypodFirestore(object):
 
     def write_to_db(self, lilypodObject):
         self.dbRef.document(str(lilypodObject.timestamp)).set(lilypodObject.to_dict())
-        # logs.cloudcomm.info('%s WRITTEN TO DB', lilypodObject.timestamp)
+        logs.cloudcomm.info('%s WRITTEN TO DB', lilypodObject.timestamp)
         return True
 
     def read_from_db(self):
@@ -30,8 +30,7 @@ class LilypodFirestore(object):
             for doc in docs:
                 return doc.to_dict()
         except gc_exceptions.NotFound:
-            # logs.cloudcomm.warning('%s DOC NOT FOUND', docName)
-            pass
+            logs.cloudcomm.warning('DOC NOT FOUND')
 
 
 class LilypodObject(object):

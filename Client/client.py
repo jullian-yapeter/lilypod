@@ -19,18 +19,26 @@ class LilypodFirestoreClient(object):
         self.dbRef = db.collection(dbName)
         self.lilypodName = lilypodName
 
-    # def write_to_db(self, lilypodObject):
-    #     self.dbRef.document(lilypodObject.name).set(lilypodObject.to_dict())
-    #     logs.cloudcomm.info('%s WRITTEN TO DB', lilypodObject.name)
-    #     return True
+    # def read_from_db(self):
+    #     try:
+    #         docRef = self.dbRef.document(self.lilypodName)
+    #         doc = docRef.get()
+    #         return doc.to_dict()
+    #     except gc_exceptions.NotFound:
+    #         print('%s DOC NOT FOUND', self.lilypodName)
 
     def read_from_db(self):
         try:
-            docRef = self.dbRef.document(self.lilypodName)
-            doc = docRef.get()
-            return doc.to_dict()
+            docRef = self.dbRef.order_by(u'timestamp',
+                                         direction=firestore.Query.DESCENDING).limit(1)
+            docs = docRef.stream()
+
+            # docRef = self.dbRef.document(docName)
+            # doc = docRef.get()
+            for doc in docs:
+                return doc.to_dict()
         except gc_exceptions.NotFound:
-            print('%s DOC NOT FOUND', self.lilypodName)
+            print('DOC NOT FOUND')
 
 
 class Chart():
