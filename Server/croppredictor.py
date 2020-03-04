@@ -3,6 +3,7 @@ from lilymodel import LilypodML
 import firebase_admin
 from firebase_admin import credentials, firestore
 import google.cloud.exceptions as gc_exceptions
+import time
 
 
 class LilypodFirestoreServer(object):
@@ -46,6 +47,11 @@ class LilypodFirestoreServer(object):
         except gc_exceptions.NotFound:
             print('SCORE DOC NOT FOUND')
 
+    def write_prediction(self, prediction):
+        self.dbRef.document("prediction").set({"timestamp": time.time(), "value": prediction})
+        print('PREDICTION WRITTEN TO DB')
+        return True
+
 
 class OnlineLearn():
 
@@ -58,12 +64,12 @@ class OnlineLearn():
 
     def updateModel(self):
         label = self.lilyFirestore.read_score()
-        if label.timestamp != self.prevtimestamp:
+        if label["timestamp"] != self.prevtimestamp:
             data = self.lilyFirestore.read_from_db()
             if data is not None:
-                self.prevtimestamp = label.timestamp
+                self.prevtimestamp = label["timestamp"]
                 x_data = [self.updateSpectroscopyData(), self.updatePhData(), self.updateCondData()]
-                self.lilypodModel.fitModel(1, x_data, np.array([[label.score]]))
+                self.lilypodModel.fitModel(1, x_data, np.array([[label["score"]]]))
 
     def updateSpectroscopyData(self):
         spectroscopyData = self.getData('spectroscopy')
@@ -94,12 +100,14 @@ class OnlineLearn():
 
     def predictCropScore(self):
         command = self.lilyFirestore.read_command()
-        if (command.timestamp != self.prevcommandtimestamp) and command.command:
+        if (command["timestamp"] != self.prevcommandtimestamp) and command["command"]:
             data = self.lilyFirestore.read_from_db()
             if data is not None:
                 # set command to false
+                self.prevcommandtimestamp = command["timestamp"]
                 x_data = [self.updateSpectroscopyData(), self.updatePhData(), self.updateCondData()]
                 score = self.lilypodModel.predictScore(x_data)
+                self.lilypodFirestore.write_prediction(score[0][0])
                 return score[0][0]
 
 
