@@ -19,14 +19,7 @@ class LilypodFirestoreClient(object):
         self.dbRef = db.collection(dbName)
         self.lilypodName = lilypodName
         self.prevDoc = None
-
-    # def read_from_db(self):
-    #     try:
-    #         docRef = self.dbRef.document(self.lilypodName)
-    #         doc = docRef.get()
-    #         return doc.to_dict()
-    #     except gc_exceptions.NotFound:
-    #         print('%s DOC NOT FOUND', self.lilypodName)
+        self.prevpredtimestamp = None
 
     def read_from_db(self):
         try:
@@ -41,6 +34,17 @@ class LilypodFirestoreClient(object):
                     return None
         except gc_exceptions.NotFound:
             print('DOC NOT FOUND')
+
+    def read_prediction(self):
+        try:
+            docRef = self.dbRef.document("prediction")
+            doc = docRef.get()
+            docdict = doc.to_dict()
+            if docdict["timestamp"] != self.prevpredtimestamp:
+                self.prevpredtimestamp = docdict["timestamp"]
+                return docdict["value"]
+        except gc_exceptions.NotFound:
+            print('%s DOC NOT FOUND', self.lilypodName)
 
 
 class Chart():
