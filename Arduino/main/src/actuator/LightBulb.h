@@ -7,8 +7,8 @@ class LightBulb{
         int _pinIn;
 
         void setupLightBulb(int pinIn);
-        float turnOn();
-        float turnOff();
+        void turnOn();
+        void turnOff();
         void testFunction();
 };
 

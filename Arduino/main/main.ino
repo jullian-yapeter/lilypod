@@ -84,7 +84,6 @@ float newTrapState = 0.0;
 float phValue = 0.0;
 float condValue = 0.0;
 float ussValue = 0.0;
-float newBulbState = 0.0;
 
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
@@ -121,9 +120,9 @@ void loop(){
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
     // ledStrip.testFunction();
-    // LightBulb.testFunction();
+    lightBulb.testFunction();
     // while(true){};
-     runRoutine();
+    //  runRoutine();
 }
 
 
@@ -158,12 +157,12 @@ void runRoutine(){
     if (checkequals(bulbState,1.0)){
         //Turn on lightbulb
         // Serial.println("Turning on spectrometer light");
-        newBulbState = lightBulb.turnOn();
+        lightBulb.turnOn();
     }
     else{
         //Turn off lightbulb
         // Serial.println("Turning off spectrometer light");
-        newBulbState = lightBulb.turnOff();
+        lightBulb.turnOff();
     }
     if (checkequals(garageState,1.0)) {
         // Move garage in direction = garageDir
@@ -234,7 +233,6 @@ void runRoutine(){
     sensorData[2] = phValue;
     sensorData[3] = condValue;
     sensorData[4] = ussValue;
-    sensorData[5] = newBulbState;
 
     serialcomm.setSensorData(sensorData);
     serialcomm.sendSensorData();
