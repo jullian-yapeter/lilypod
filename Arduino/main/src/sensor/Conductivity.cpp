@@ -7,21 +7,16 @@
 #include "Conductivity.h"
 #include "Arduino.h"
 
-// Constructor /////////////////////////////////////////////////////////////////
-
-Conductivity::Conductivity()
-{
-  Serial.begin(9600);
+void Conductivity::setupConductivity(int probePin){
+    _probePin = probePin;
 }
 
-// Public Methods //////////////////////////////////////////////////////////////
-
-void Conductivity::doSomething(void)
-{
-}
-
-// Private Methods /////////////////////////////////////////////////////////////
-
-void Conductivity::doSomethingSecret(void)
-{
+float Conductivity::sampleConductivity(){
+    int condVal = analogRead(_probePin);
+    float voltage = condVal*(5.0/1023.0);
+    delay(50);
+    Serial.print("conductivity: ");
+    Serial.print(voltage);
+    Serial.print("\n");
+    return voltage;
 }
