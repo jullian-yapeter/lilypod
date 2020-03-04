@@ -33,9 +33,6 @@ class LilypodFirestoreClient(object):
             docRef = self.dbRef.order_by(u'timestamp',
                                          direction=firestore.Query.DESCENDING).limit(1)
             docs = docRef.stream()
-
-            # docRef = self.dbRef.document(docName)
-            # doc = docRef.get()
             for doc in docs:
                 if doc != self.prevDoc:
                     self.prevDoc = doc
