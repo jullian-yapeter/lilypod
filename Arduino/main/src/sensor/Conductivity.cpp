@@ -12,11 +12,32 @@ void Conductivity::setupConductivity(int probePin){
 }
 
 float Conductivity::sampleConductivity(){
-    int condVal = analogRead(_probePin);
-    float voltage = condVal*(5.0/1023.0);
-    delay(50);
-    Serial.print("conductivity: ");
-    Serial.print(voltage);
-    Serial.print("\n");
-    return voltage;
+    unsigned long int condVal;
+
+    //Get 10 sample value from the sensor for smooth the value 
+    for(int i = 0; i < 10; i++){
+        _buf[i] = analogRead(_probePin);
+        delay(20);
+    }
+    //sort the analog from small to large
+    for(int i=0;i<9;i++){
+        for(int j=i+1; j<10; j++){
+            if(_buf[i] > _buf[j])
+            {
+                _temp = _buf[i];
+                _buf[i] = _buf[j];
+                _buf[j] = _temp;
+            }
+        }
+    }
+    condVal = 0;
+    for(int i=2; i<8; i++){ //take the average value of 6 center sample
+        condVal += _buf[i];
+    }
+    condVal /= 6;
+    float adjustedCondVal = condVal*(1.0/500.0);
+    // Serial.print("conductivity: ");
+    // Serial.print(adjustedCondVal);
+    // Serial.print("\n");
+    return adjustedCondVal;
 }

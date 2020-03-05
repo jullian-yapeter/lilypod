@@ -11,6 +11,7 @@ class Conductivity{
   // user-accessible "public" interface
   public:
     int _probePin;
+    int _buf[10], _temp;
     void setupConductivity(int probePin);
     float sampleConductivity();
   // library-accessible "private" interface

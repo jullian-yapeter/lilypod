@@ -115,7 +115,7 @@ void loop(){
     //  garage.closeDoor();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
-    condSensor.sampleConductivity();
+    // condSensor.sampleConductivity();
     // while(true){};
     //  runRoutine();
 }
@@ -194,7 +194,7 @@ void runRoutine(){
     }
     if (checkequals(condState,1.0)){
         // get new conductivity reading and store it in phValue
-        condValue = 24.8;
+        condValue = condSensor.sampleConductivity();
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
