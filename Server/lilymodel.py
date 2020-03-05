@@ -23,25 +23,47 @@ class LilypodML():
         inputSpec = Input(batch_shape=(1, 1, 10))
         inputPh = Input(batch_shape=(1, 1, 1))
         inputCond = Input(batch_shape=(1, 1, 1))
+
+        # # the first branch operates on the spectrometery input
+        # w = LSTM(10, activation="relu", batch_input_shape=(1, 1, 10), return_sequences=True, stateful=True)(inputSpec)
+        # w = BatchNormalization()(w)
+        # w = LSTM(50, activation="relu", return_sequences=True, stateful=True)(w)
+        # w = BatchNormalization()(w)
+        # w = LSTM(10, activation="relu", return_sequences=False, stateful=True)(w)
+        # w = Model(inputs=inputSpec, outputs=w)
+        # # the second branch opreates on the pH input
+        # x = LSTM(3, activation="relu", batch_input_shape=(1, 1, 1), return_sequences=True, stateful=True)(inputPh)
+        # x = BatchNormalization()(x)
+        # x = LSTM(1, activation="relu", return_sequences=False, stateful=True)(x)
+        # x = BatchNormalization()(x)
+        # x = Model(inputs=inputPh, outputs=x)
+        # # the third branch opreates on the conductivity input
+        # y = LSTM(3, activation="relu", batch_input_shape=(1, 1, 1), return_sequences=True, stateful=True)(inputCond)
+        # y = BatchNormalization()(y)
+        # y = LSTM(1, activation="relu", return_sequences=False, stateful=True)(y)
+        # y = BatchNormalization()(y)
+        # y = Model(inputs=inputCond, outputs=y)
+
         # the first branch operates on the spectrometery input
-        w = LSTM(10, activation="relu", batch_input_shape=(1, 1, 10), return_sequences=True, stateful=True)(inputSpec)
+        w = Dense(10, activation="relu", batch_input_shape=(1, 1, 10))(inputSpec)
         w = BatchNormalization()(w)
-        w = LSTM(50, activation="relu", return_sequences=True, stateful=True)(w)
+        w = Dense(50, activation="relu")(w)
         w = BatchNormalization()(w)
-        w = LSTM(10, activation="relu", return_sequences=False, stateful=True)(w)
+        w = Dense(10, activation="relu")(w)
         w = Model(inputs=inputSpec, outputs=w)
         # the second branch opreates on the pH input
-        x = LSTM(3, activation="relu", batch_input_shape=(1, 1, 1), return_sequences=True, stateful=True)(inputPh)
+        x = Dense(3, activation="relu", batch_input_shape=(1, 1, 1))(inputPh)
         x = BatchNormalization()(x)
-        x = LSTM(1, activation="relu", return_sequences=False, stateful=True)(x)
+        x = Dense(1, activation="relu")(x)
         x = BatchNormalization()(x)
         x = Model(inputs=inputPh, outputs=x)
         # the third branch opreates on the conductivity input
-        y = LSTM(3, activation="relu", batch_input_shape=(1, 1, 1), return_sequences=True, stateful=True)(inputCond)
+        y = Dense(3, activation="relu", batch_input_shape=(1, 1, 1))(inputCond)
         y = BatchNormalization()(y)
-        y = LSTM(1, activation="relu", return_sequences=False, stateful=True)(y)
+        y = Dense(1, activation="relu")(y)
         y = BatchNormalization()(y)
         y = Model(inputs=inputCond, outputs=y)
+
         # combine the output of the three branches
         combined = concatenate([w.output, x.output, y.output], axis=-1)
         # apply a FC layer and then a regression prediction on the

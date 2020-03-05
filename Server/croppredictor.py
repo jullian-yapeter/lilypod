@@ -84,7 +84,7 @@ class OnlineLearn():
                 x_data = [spectroscopyChartData, phChartData, condChartData]
                 print(x_data)
                 # print(x_data)
-                self.lilypodModel.fitModel(1, x_data, np.array([[label["value"]]]))
+                self.lilypodModel.fitModel(10, x_data, np.array([[[label["value"]]]]))
 
     def updateSpectroscopyData(self):
         spectroscopyData = self.currData['spectroscopy']
