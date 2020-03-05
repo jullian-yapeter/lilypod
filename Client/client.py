@@ -145,6 +145,7 @@ class Dashboard():
                 if self.ii.lb_active:
                     try:
                         self.lilypodFirestore.write_label(self.ii.text)
+                        self.screen.fill(pygame.Color("white"), self.ii.input_box)
                         self.ii.text = ''
                         self.ii.lb_active = False
                     except:
@@ -154,7 +155,8 @@ class Dashboard():
                 if self.ii.pb_active:
                     try:
                         self.lilypodFirestore.write_command(True)
-                        time.sleep(2)
+                        self.screen.fill(pygame.Color("white"), self.ii.output_box)
+                        time.sleep(1)
                         score = self.lilypodFirestore.read_prediction()
                         self.ii.pb_active = False
                     except:
@@ -167,7 +169,7 @@ class Dashboard():
                             print(self.ii.text)
                             # self.ii.text = ''
                         elif event.key == pygame.K_BACKSPACE:
-                            self.screen.fill(pygame.Color("white"), (self.ii.input_box.top, self.ii.input_box.left, self.ii.input_box.bottom, self.ii.input_box.right+20))
+                            self.screen.fill(pygame.Color("white"), self.ii.input_box)
                             self.ii.text = self.ii.text[:-1]
                         else:
                             self.ii.text += event.unicode

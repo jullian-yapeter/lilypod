@@ -82,6 +82,7 @@ class OnlineLearn():
                 # if self.currData is not None:
                 self.prevtimestamp = label["time"]
                 x_data = [spectroscopyChartData, phChartData, condChartData]
+                print(x_data)
                 # print(x_data)
                 self.lilypodModel.fitModel(1, x_data, np.array([[label["value"]]]))
 
@@ -128,6 +129,7 @@ class OnlineLearn():
                 self.lilypodFirestore.reset_command()
                 self.prevcommandtimestamp = command["time"]
                 x_data = [spectroscopyChartData, phChartData, condChartData]
+                print(x_data)
                 score = self.lilypodModel.predictScore(x_data)
                 self.lilypodFirestore.write_prediction(min(100, max(0, float(score[0][0])*100) ) )
                 return float(score[0][0])*100
