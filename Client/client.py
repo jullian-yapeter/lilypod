@@ -1,3 +1,4 @@
+import time
 import matplotlib.backends.backend_agg as agg
 import pylab
 import pygame
@@ -40,11 +41,21 @@ class LilypodFirestoreClient(object):
             docRef = self.dbRef.document("prediction")
             doc = docRef.get()
             docdict = doc.to_dict()
-            if docdict["timestamp"] != self.prevpredtimestamp:
-                self.prevpredtimestamp = docdict["timestamp"]
+            if docdict["time"] != self.prevpredtimestamp:
+                self.prevpredtimestamp = docdict["time"]
                 return docdict["value"]
         except gc_exceptions.NotFound:
             print('%s DOC NOT FOUND', self.lilypodName)
+
+    def write_label(self, label):
+        self.dbRef.document("label").set({"time": time.time(), "value": float(label)/100})
+        print('LABEL WRITTEN TO DB')
+        return True
+
+    def write_command(self, command):
+        self.dbRef.document("command").set({"time": time.time(), "value": command})
+        print('LABEL WRITTEN TO DB')
+        return True
 
 
 class Chart():
@@ -64,6 +75,8 @@ class Dashboard():
         self.width = 1200
         self.title = None
         self.titlebox = None
+        self.ii = InputInterface()
+        self.currData = None
 
     def generateEmptyDashboard(self):
         background_colour = (255, 255, 255)
@@ -82,23 +95,111 @@ class Dashboard():
 
     def updateDashboard(self):
         running = True
+        score = None
         while running:
-            self.screen.blit(self.title, self.titlebox)
+            self.getData()
             spectroscopyChartData = self.updateSpectroscopyData()
             phChartData = self.updatePhData()
             condChartData = self.updateCondData()
             if spectroscopyChartData is not None:
                 spectroscopyChart = self.createChart('Spectrometry', spectroscopyChartData, 1)
                 self.screen.blit(spectroscopyChart.surface, spectroscopyChart.location)
+            else:
+                print("SPEC NONE")
             if phChartData is not None:
                 phChart = self.createChart('pH', phChartData, 2)
                 self.screen.blit(phChart.surface, phChart.location)
+            else:
+                print("PH NONE")
             if condChartData is not None:
                 condChart = self.createChart('Conductivity', condChartData, 3)
                 self.screen.blit(condChart.surface, condChart.location)
+            else:
+                print("COND NONE")
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # If the user clicked on the input_box rect.
+                    if self.ii.input_box.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        self.ii.active = not self.ii.active
+                    else:
+                        self.ii.active = False
+                    
+                    if self.ii.label_button.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        self.ii.lb_active = True
+                    else:
+                        self.ii.lb_active = False
+
+                    if self.ii.predict_button.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        self.ii.pb_active = True
+                    else:
+                        self.ii.pb_active = False
+                    # Change the current color of the input box.
+                    self.ii.color = self.ii.color_active if self.ii.active else self.ii.color_inactive
+
+                if self.ii.lb_active:
+                    try:
+                        self.lilypodFirestore.write_label(self.ii.text)
+                        self.ii.text = ''
+                        self.ii.lb_active = False
+                    except:
+                        print("INPUT WAS INVALID")
+                        pass
+
+                if self.ii.pb_active:
+                    try:
+                        self.lilypodFirestore.write_command(True)
+                        time.sleep(2)
+                        score = self.lilypodFirestore.read_prediction()
+                        self.ii.pb_active = False
+                    except:
+                        print("FAILED GETTING PREDICTION")
+                        pass
+
+                if event.type == pygame.KEYDOWN:
+                    if self.ii.active:
+                        if event.key == pygame.K_RETURN:
+                            print(self.ii.text)
+                            # self.ii.text = ''
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.screen.fill(pygame.Color("white"), (self.ii.input_box.top, self.ii.input_box.left, self.ii.input_box.bottom, self.ii.input_box.right+20))
+                            self.ii.text = self.ii.text[:-1]
+                        else:
+                            self.ii.text += event.unicode
+
+            txt_surface = self.ii.font.render(self.ii.text, True, self.ii.color)
+            output_txt_surface = None
+            if score is not None:
+                output_txt_surface = self.ii.font.render(str(round(score, 2)), True, pygame.Color('black'))
+            
+            label_txt_surface = self.ii.font.render("Set Rating", True, pygame.Color('black'))
+            predict_txt_surface = self.ii.font.render("Get Rating", True, pygame.Color('black'))
+            
+            width = max(200, txt_surface.get_width()+10)
+
+            self.screen.blit(self.title, self.titlebox)
+            self.screen.blit(self.ii.labelboxtitle, self.ii.labelboxtitlebox)
+            self.screen.blit(self.ii.scoreboxtitle, self.ii.scoreboxtitlebox)
+
+            self.ii.input_box.w = width
+            self.screen.blit(txt_surface, (self.ii.input_box.x+10, self.ii.input_box.y+10))
+            pygame.draw.rect(self.screen, self.ii.color, self.ii.input_box, 2)
+
+            if output_txt_surface is not None:
+                self.screen.blit(output_txt_surface, (self.ii.output_box.x+10, self.ii.output_box.y+10))
+            pygame.draw.rect(self.screen, pygame.Color('green'), self.ii.output_box, 2)
+
+            pygame.draw.rect(self.screen, pygame.Color('lightblue'), self.ii.label_button, 0)
+            self.screen.blit(label_txt_surface, (self.ii.label_button.x+50, self.ii.label_button.y+5))
+
+            pygame.draw.rect(self.screen, pygame.Color('lightgreen'), self.ii.predict_button, 0)
+            self.screen.blit(predict_txt_surface, (self.ii.predict_button.x+50, self.ii.predict_button.y+5))
+
             pygame.display.update()
 
     def createChart(self, title, data, loc):
@@ -114,11 +215,12 @@ class Dashboard():
         size = canvas.get_width_height()
         chart.surface = pygame.image.fromstring(raw_data, size, "RGB")
         chart.location = chart.surface.get_rect()
-        chart.location.center = (self.width//2, loc*(self.height//4) + 20*loc)
+        chart.location.center = (self.width//2 - 120, loc*(self.height//4) + 20*loc)
         return chart
 
     def updateSpectroscopyData(self):
-        spectroscopyData = self.getData('spectroscopy')
+        # print(self.currData)
+        spectroscopyData = self.currData['spectroscopy']
         if spectroscopyData is not None:
             spectroscopyKeys = list(spectroscopyData.keys())
             spectroscopyKeys = [int(i) for i in spectroscopyKeys]
@@ -130,7 +232,7 @@ class Dashboard():
             return None
 
     def updatePhData(self):
-        phData = self.getData('ph')
+        phData = self.currData['ph']
         if phData is not None:
             self.phMemory.insert(0, phData)
             self.phMemory.pop()
@@ -139,7 +241,7 @@ class Dashboard():
             return None
 
     def updateCondData(self):
-        condData = self.getData('conductivity')
+        condData = self.currData['conductivity']
         if condData is not None:
             self.condMemory.insert(0, condData)
             self.condMemory.pop()
@@ -147,13 +249,41 @@ class Dashboard():
         else:
             return None
 
-    def getData(self, attribute):
+    def getData(self):
         data = self.lilypodFirestore.read_from_db()
         if data is not None:
-            return data[attribute]
+            self.currData = data
+            return data
         else:
             return None
 
+
+class InputInterface():
+    def __init__(self):
+        self.input_box = pygame.Rect(940, 200, 200, 32)
+        self.active = False
+        self.text = ''
+        self.font = pygame.font.Font(None, 32)
+        self.color_inactive = pygame.Color('lightskyblue3')
+        self.color_active = pygame.Color('dodgerblue2')
+        self.color = self.color_inactive
+
+        self.output_box = pygame.Rect(940, 400, 200, 32)
+
+        self.label_button = pygame.Rect(940, 250, 200, 32)
+        self.lb_active = False
+
+        self.predict_button = pygame.Rect(940, 450, 200, 32)
+        self.pb_active = False
+        
+        font = pygame.font.Font('freesansbold.ttf', 30)
+        self.labelboxtitle = font.render("Input Crop Rating", True, (0, 0, 0), (255, 255, 255))
+        self.labelboxtitlebox = self.labelboxtitle.get_rect()
+        self.labelboxtitlebox.center = (self.input_box.center[0], self.input_box.center[1]-30)
+
+        self.scoreboxtitle = font.render("Predicted Crop Rating", True, (0, 0, 0), (255, 255, 255))
+        self.scoreboxtitlebox = self.scoreboxtitle.get_rect()
+        self.scoreboxtitlebox.center = (self.output_box.center[0], self.output_box.center[1]-30)
 
 def main():
     lilypodDashboard = Dashboard()

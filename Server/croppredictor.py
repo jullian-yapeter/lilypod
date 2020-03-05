@@ -48,14 +48,20 @@ class LilypodFirestoreServer(object):
             print('SCORE DOC NOT FOUND')
 
     def write_prediction(self, prediction):
-        self.dbRef.document("prediction").set({"timestamp": time.time(), "value": prediction})
+        self.dbRef.document("prediction").set({"time": time.time(), "value": prediction})
         print('PREDICTION WRITTEN TO DB')
+        return True
+
+    def reset_command(self):
+        self.dbRef.document("command").set({"time": time.time(), "value": False})
+        print('COMMAND RESET')
         return True
 
 
 class OnlineLearn():
 
     def __init__(self):
+        self.currData = None
         self.lilypodFirestore = LilypodFirestoreServer()
         self.lilypodModel = LilypodML()
         self.lilypodModel.resetStates()
@@ -63,16 +69,24 @@ class OnlineLearn():
         self.prevcommandtimestamp = None
 
     def updateModel(self):
-        label = self.lilyFirestore.read_score()
-        if label["timestamp"] != self.prevtimestamp:
-            data = self.lilyFirestore.read_from_db()
-            if data is not None:
-                self.prevtimestamp = label["timestamp"]
-                x_data = [self.updateSpectroscopyData(), self.updatePhData(), self.updateCondData()]
-                self.lilypodModel.fitModel(1, x_data, np.array([[label["score"]]]))
+        self.getData()
+        spectroscopyChartData = self.updateSpectroscopyData()
+        phChartData = self.updatePhData()
+        condChartData = self.updateCondData()
+        if (spectroscopyChartData is not None) and (phChartData is not None) and (condChartData is not None):
+            label = self.lilypodFirestore.read_score()
+            if label["time"] != self.prevtimestamp:
+                print("IN_UPDATE")
+                # data = self.lilypodFirestore.read_from_db()
+                # print(data)
+                # if self.currData is not None:
+                self.prevtimestamp = label["time"]
+                x_data = [spectroscopyChartData, phChartData, condChartData]
+                # print(x_data)
+                self.lilypodModel.fitModel(1, x_data, np.array([[label["value"]]]))
 
     def updateSpectroscopyData(self):
-        spectroscopyData = self.getData('spectroscopy')
+        spectroscopyData = self.currData['spectroscopy']
         if spectroscopyData is not None:
             spectroscopyKeys = list(spectroscopyData.keys())
             spectroscopyKeys = [int(i) for i in spectroscopyKeys]
@@ -82,37 +96,47 @@ class OnlineLearn():
             return np.array([[spectroscopyVals]])
 
     def updatePhData(self):
-        phData = self.getData('ph')
+        phData = self.currData['ph']
         if phData is not None:
-            return np.array([[phData]])
+            return np.array([[[phData]]])
 
     def updateCondData(self):
-        condData = self.getData('conductivity')
+        condData = self.currData['conductivity']
         if condData is not None:
-            return np.array([[condData]])
+            return np.array([[[condData]]])
 
-    def getData(self, attribute):
+    def getData(self):
         data = self.lilypodFirestore.read_from_db()
         if data is not None:
-            return data[attribute]
+            self.currData = data
+            # print(self.currData)
+            return data
         else:
             return None
 
     def predictCropScore(self):
-        command = self.lilyFirestore.read_command()
-        if (command["timestamp"] != self.prevcommandtimestamp) and command["command"]:
-            data = self.lilyFirestore.read_from_db()
-            if data is not None:
-                # set command to false
-                self.prevcommandtimestamp = command["timestamp"]
-                x_data = [self.updateSpectroscopyData(), self.updatePhData(), self.updateCondData()]
+        self.getData()
+        spectroscopyChartData = self.updateSpectroscopyData()
+        phChartData = self.updatePhData()
+        condChartData = self.updateCondData()
+        if (spectroscopyChartData is not None) and (phChartData is not None) and (condChartData is not None):
+            command = self.lilypodFirestore.read_command()
+            if (command["time"] != self.prevcommandtimestamp) and command["value"]:
+                print("IN_PREDICT")
+                # data = self.lilypodFirestore.read_from_db()
+                # if data is not None:
+                self.lilypodFirestore.reset_command()
+                self.prevcommandtimestamp = command["time"]
+                x_data = [spectroscopyChartData, phChartData, condChartData]
                 score = self.lilypodModel.predictScore(x_data)
-                self.lilypodFirestore.write_prediction(score[0][0])
-                return score[0][0]
+                self.lilypodFirestore.write_prediction(min(100, max(0, float(score[0][0])*100) ) )
+                return float(score[0][0])*100
 
 
 if __name__ == '__main__':
     lilyLearn = OnlineLearn()
     while True:
         lilyLearn.updateModel()
-        print(lilyLearn.predictCropScore())
+        score = lilyLearn.predictCropScore()
+        if score is not None:
+            print(score)
