@@ -3,20 +3,18 @@
   Copyright (c) 2020 Team Lilypod.  All right reserved.
 */
 
-#ifndef Conductivity_h
-#define Conductivity_h
+#ifndef HEADER_CONDUCTIVITY
+#define HEADER_CONDUCTIVITY
 
 // library interface description
-class Conductivity
-{
+class Conductivity{
   // user-accessible "public" interface
   public:
-    Conductivity();
-    void doSomething(void);
+    int _probePin;
+    int _buf[10], _temp;
+    void setupConductivity(int probePin);
+    float sampleConductivity();
   // library-accessible "private" interface
-  private:
-    int value;
-    void doSomethingSecret(void);
 };
 
 #endif

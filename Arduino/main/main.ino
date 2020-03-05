@@ -83,6 +83,7 @@ float phValue = 0.0;
 float condValue = 0.0;
 float ussValue = 0.0;
 
+Conductivity condSensor;
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
 
@@ -101,6 +102,7 @@ void setup(){
     garage.setupGarageDoor(servoGaragePin, 180, 0);
     trap.setupTrapDoor(servoTrapPin, trapLimSwitch, 0);
     garbageChecker.setupSonar(trigPin, echoPin);
+    condSensor.setupConductivity(conductPin);
 }
 
 void loop(){
@@ -113,8 +115,9 @@ void loop(){
     //  garage.closeDoor();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
+    // condSensor.sampleConductivity();
     // while(true){};
-     runRoutine();
+    //  runRoutine();
 }
 
 
@@ -191,7 +194,7 @@ void runRoutine(){
     }
     if (checkequals(condState,1.0)){
         // get new conductivity reading and store it in phValue
-        condValue = 24.8;
+        condValue = condSensor.sampleConductivity();
     }
     if (checkequals(ussState,1.0)){
         // get new ultrasonic reading and store it in phValue
