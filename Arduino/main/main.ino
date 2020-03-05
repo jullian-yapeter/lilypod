@@ -67,9 +67,9 @@ const int echoPin = 8;  // Not using 13 because 13 connects to onboard LED
 const int bulbPin = 2;
 
 // LED Strips (3 PWM)
-const int bluePin = 9;
-const int redPin = 10;
-const int greenPin = 11;
+const int redPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
 
 // Conductivity (1 analog)
 const int conductPin = A1;
