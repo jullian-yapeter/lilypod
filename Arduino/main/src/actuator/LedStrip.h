@@ -17,9 +17,12 @@ class LedStrip{
         void testFunction();
 
     private:
+        // const int _maxRed = 255;
+        // const int _maxGreen = 90;
+        // const int _maxBlue = 100;
         const int _maxRed = 255;
-        const int _maxGreen = 90;
-        const int _maxBlue = 100;
+        const int _maxGreen = 255;
+        const int _maxBlue = 255;
 
 };
 

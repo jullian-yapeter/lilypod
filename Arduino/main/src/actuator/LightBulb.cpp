@@ -19,8 +19,10 @@ void LightBulb::turnOff(){
 }
 
 void LightBulb::testFunction(){
+    // Serial.println("Lightbulb on");
     turnOn();
     delay(2000);
+    // Serial.println("Lightbulb off");
     turnOff();
     delay(2000);
 }

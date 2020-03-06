@@ -36,8 +36,8 @@ float Conductivity::sampleConductivity(){
     }
     condVal /= 6;
     float microSiemens = (0.0804 * condVal) + 66.033;
-    Serial.print("conductivity: ");
-    Serial.print(microSiemens);
-    Serial.print("\n");
+    // Serial.print("conductivity: ");
+    // Serial.print(microSiemens);
+    // Serial.print("\n");
     return microSiemens;
 }

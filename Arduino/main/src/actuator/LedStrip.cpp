@@ -45,18 +45,25 @@ void LedStrip::turnOff(){
 }
 
 void LedStrip::testFunction(){
+    // Serial.println("Shining Red");
     shineRed();
     delay(2000);
+    // Serial.println("Shining Green");
     shineGreen();
     delay(2000);
+    // Serial.println("Shining Blue");
     shineBlue();
     delay(2000);
+    // Serial.println("Shining White");
     shineWhite();
     delay(2000);
+    // Serial.println("Strip off");
     turnOff();
     delay(1000);
+    // Serial.println("Shining White");
     shineWhite();
     delay(2000);
+    // Serial.println("Strip off");
     turnOff();
     delay(1000);
 

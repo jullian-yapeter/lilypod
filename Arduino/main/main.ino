@@ -123,7 +123,7 @@ void loop(){
     // bool garbageState = garbageChecker.isGarbageFull();
     // condSensor.sampleConductivity();
     // ledStrip.testFunction();
-    lightBulb.testFunction();
+    // lightBulb.testFunction();
     // while(true){};
     //  runRoutine();
 }
