@@ -116,6 +116,7 @@ void setup(){
 void loop(){
     // phSensor.samplePh();
     // testMotor.testFunction();
+    pump.testFunction();
     // garage.testFunction();
     // garage.closeDoor();
     // trap.openDoor();
@@ -127,7 +128,7 @@ void loop(){
     // ledStrip.testFunction();
     // lightBulb.testFunction();
     // while(true){};
-     runRoutine();
+    //  runRoutine();
 }
 
 
