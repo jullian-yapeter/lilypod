@@ -14,34 +14,39 @@ void LedStrip::setupStrip(int pinRed, int pinGreen, int PinBlue){
     // Serial.println("LED Strip setup complete");
 }
 
-void LedStrip::shineRed(){
+float LedStrip::shineRed(){
     analogWrite(_pinRed, _maxRed);
     analogWrite(_pinGreen, 0);
     analogWrite(_pinBlue, 0);
+    return _newRstate;
 }
 
-void LedStrip::shineGreen(){
+float LedStrip::shineGreen(){
     analogWrite(_pinRed, 0);
     analogWrite(_pinGreen, _maxGreen);
     analogWrite(_pinBlue, 0);
+    return _newGState;
 }
 
-void LedStrip::shineBlue(){
+float LedStrip::shineBlue(){
     analogWrite(_pinRed, 0);
     analogWrite(_pinGreen, 0);
     analogWrite(_pinBlue, _maxBlue);
+    return _newBState;
 }
 
-void LedStrip::shineWhite(){
+float LedStrip::shineWhite(){
     analogWrite(_pinRed, _maxRed);
     analogWrite(_pinGreen, _maxGreen);
     analogWrite(_pinBlue, _maxBlue);
+    return _newWState;
 }
 
-void LedStrip::turnOff(){
+float LedStrip::turnOff(){
     analogWrite(_pinRed, 0);
     analogWrite(_pinGreen, 0);
     analogWrite(_pinBlue, 0);
+    return _newOffState;
 }
 
 void LedStrip::testFunction(){

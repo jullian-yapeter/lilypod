@@ -84,6 +84,8 @@ float newTrapState = 0.0;
 float phValue = 0.0;
 float condValue = 0.0;
 float ussValue = 0.0;
+float newBlulbState = 0.0;
+float newLedState = 0.0;
 
 Conductivity condSensor;
 PhSensor phSensor(pHSensorPin);
@@ -160,12 +162,12 @@ void runRoutine(){
     if (checkequals(bulbState, 1.0)){
         //Turn on lightbulb
         // Serial.println("Turning on spectrometer light");
-        lightBulb.turnOn();
+        newBlulbState = lightBulb.turnOn();
     }
     else{
         //Turn off lightbulb
         // Serial.println("Turning off spectrometer light");
-        lightBulb.turnOff();
+        newBlulbState = lightBulb.turnOff();
     }
     if (checkequals(garageState, 1.0)) {
         // Move garage in direction = garageDir
@@ -203,19 +205,19 @@ void runRoutine(){
     }
     if (checkequals(ledState, 0.0)){
         // shine blue
-        ledStrip.shineBlue();
+        newLedState = ledStrip.shineBlue();
     }
     else if (checkequals(ledState, 1.0)){
         // shine green
-        ledStrip.shineGreen();
+        newLedState = ledStrip.shineGreen();
     }
     else if (checkequals(ledState, 2.0)){
         // shine yellow
-        ledStrip.shineWhite();
+        newLedState = ledStrip.shineWhite();
     }
     else if (checkequals(ledState, 3.0)){
         // shine red
-        ledStrip.shineRed();
+        newLedState = ledStrip.shineRed();
     }
 
 
@@ -227,6 +229,9 @@ void runRoutine(){
     sensorData[2] = phValue;
     sensorData[3] = condValue;
     sensorData[4] = ussValue;
+    sensorData[5] = newBlulbState;
+    sensorData[6] = newLedState;
+
 
     serialcomm.setSensorData(sensorData);
     serialcomm.sendSensorData();
