@@ -84,17 +84,19 @@ class OnlineLearn():
                 x_data = [spectroscopyChartData, phChartData, condChartData]
                 print(x_data)
                 # print(x_data)
-                self.lilypodModel.fitModel(10, x_data, np.array([[[label["value"]]]]))
+                self.lilypodModel.fitModel(100, x_data, np.array([[[label["value"]]]]))
 
     def updateSpectroscopyData(self):
         spectroscopyData = self.currData['spectroscopy']
         if spectroscopyData is not None:
             spectroscopyKeys = list(spectroscopyData.keys())
-            spectroscopyKeys = [int(i) for i in spectroscopyKeys]
+            spectroscopyKeys = [float(i) for i in spectroscopyKeys]
             spectroscopyKeys.sort()
             spectroscopyKeys = [str(i) for i in spectroscopyKeys]
             spectroscopyVals = [spectroscopyData[k] for k in spectroscopyKeys]
-            return np.array([[spectroscopyVals]])
+            resizedSpectroscopyVals = np.zeros((1000,))
+            resizedSpectroscopyVals[:len(spectroscopyVals)] = np.array(spectroscopyVals)
+            return np.array([[resizedSpectroscopyVals.tolist()]])
 
     def updatePhData(self):
         phData = self.currData['ph']
