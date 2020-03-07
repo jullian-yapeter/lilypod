@@ -82,8 +82,8 @@ class LpodProc():
         #             trapDir, phState, condState, ussState, ledStrip]
         # print("CURR ELAPSED TIME :", currElapsedTime)
         startTime = time.time()
-        while self.serialcomm.commManager.sendQueue.qsize() > 0:
-            self.serialcomm.commManager.sendQueue.get()
+        # while self.serialcomm.commManager.sendQueue.qsize() > 0:
+        #     self.serialcomm.commManager.sendQueue.get()
         if currElapsedTime < self.routine.timingLookUp[prevState]:
             self.routine.updateState(prevState)
             commands = self.routine.currentRoutineStep
@@ -114,9 +114,27 @@ class LpodProc():
             commands = self.routine.currentRoutineStep
             return 0, newState, commands
 
-    def send_to_arduino(self, commands):
-        self.serialcomm.commManager.sendQueue.put(commands)
-        logs.pimain.info("COMMANDS PLACED IN QUEUE")
+    def send_to_arduino(self, state, commands):
+        # while self.serialcomm.commManager.sendQueue.qsize() > 0:
+        #     self.serialcomm.commManager.sendQueue.get()
+        if self.serialcomm.commManager.sendQueue.qsize() == 0:
+            self.serialcomm.commManager.sendQueue.put(commands)
+            pumpState = commands[0]
+            bulbState = commands[1]
+            garageState = commands[2]
+            garageDir = commands[3]
+            trapState = commands[4]
+            trapDir = commands[5]
+            phState = commands[6]
+            condState = commands[7]
+            ussState = commands[8]
+            ledStrip = commands[9]
+            print("ROUTINE : ", state)
+            print("Sent to Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
+                .format(pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip))
+            logs.pimain.info("COMMANDS PLACED IN QUEUE")
+        else:
+            logs.pimain.info("ARDUINO BUSY, TRASH COMMAND")
 
     def read_from_arduino(self):
         if self.serialcomm.commManager.receiveQueue.qsize() <= 0:
@@ -129,7 +147,7 @@ class LpodProc():
 
 def main():
     logs.pimain.info("LILYPOD MAIN START")
-    lpodProc = LpodProc(name=u'lilypod_two', baudrate=9600, slaveport='/dev/cu.usbmodem144401')
+    lpodProc = LpodProc(name=u'lilypod_two', baudrate=9600, slaveport='/dev/cu.usbmodem1411')
     # Socket version for debugging
     # sendProc = Process(target=lpodProc.serialcomm.socket_send)
     # recvProc = Process(target=lpodProc.serialcomm.socket_recv)
@@ -152,22 +170,8 @@ def main():
         while (time.time() - start < 500):
             # commands = lpodProc.generateDummyCommandsData()
             prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
-            print("ROUTINE : ", prevState)
             startProcTime = time.time()
-            pumpState = commands[0]
-            bulbState = commands[1]
-            garageState = commands[2]
-            garageDir = commands[3]
-            trapState = commands[4]
-            trapDir = commands[5]
-            phState = commands[6]
-            condState = commands[7]
-            ussState = commands[8]
-            ledStrip = commands[9]
-            lpodProc.send_to_arduino(commands)
-            print("Sent to Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
-                  .format(pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip))
-            # print(commands)
+            lpodProc.send_to_arduino(prevState, commands)
             sensorData = lpodProc.read_from_arduino()
             if sensorData and (None not in sensorData):
                 lpodProc.currData = sensorData
