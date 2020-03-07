@@ -10,12 +10,14 @@ void LightBulb::setupLightBulb(int pinIn){
     // Serial.println("Light Bulb setup complete");
 }
 
-void LightBulb::turnOn(){
+float LightBulb::turnOn(){
     digitalWrite(_pinIn, HIGH);
+    return 1.0;
 }
 
-void LightBulb::turnOff(){
+float LightBulb::turnOff(){
     digitalWrite(_pinIn, LOW);
+    return 0.0;
 }
 
 void LightBulb::testFunction(){

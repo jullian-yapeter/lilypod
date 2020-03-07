@@ -9,11 +9,11 @@ class LedStrip{
         int _pinBlue;
 
         void setupStrip(int pinRed, int pinGreen, int PinBlue);
-        void shineRed();
-        void shineGreen();
-        void shineBlue();
-        void shineWhite();
-        void turnOff();
+        float shineRed();
+        float shineGreen();
+        float shineBlue();
+        float shineWhite();
+        float turnOff();
         void testFunction();
 
     private:
@@ -23,6 +23,11 @@ class LedStrip{
         const int _maxRed = 255;
         const int _maxGreen = 255;
         const int _maxBlue = 255;
+        const int _newOffState = 4.0;
+        const int _newRstate = 3.0;
+        const int _newWState = 2.0;
+        const int _newGState = 1.0;
+        const int _newBState = 0.0;
 
 };
 
