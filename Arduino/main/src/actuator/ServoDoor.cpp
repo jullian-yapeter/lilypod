@@ -153,9 +153,9 @@ void ServoDoor::changeServoAngle(int direction){
     int currAngle = 0;
     currAngle = _servo.read();
     if (direction == _FORWARD){
-        newAngle = currAngle + 5;
+        newAngle = currAngle + 10;
     } else if (direction == _BACKWARD){
-        newAngle = currAngle - 5;
+        newAngle = currAngle - 10;
     }
     if (newAngle >= _maxAngle){
         // // Serial.println("Max angle reached");

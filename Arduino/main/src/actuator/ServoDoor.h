@@ -37,7 +37,7 @@ class ServoDoor{
     const int _BACKWARD = 0;
     const int _maxAngle = 180;
     const int _minAngle = 0;
-    const int _TIMEOUT = 10;  // in seconds
+    const int _TIMEOUT = 5;  // in seconds
     void changeServoAngle(int direction);
     bool isLimSwitchClosed();
     // bool isTopSwitchClosed();
