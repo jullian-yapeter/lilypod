@@ -225,7 +225,7 @@ class Dashboard():
         spectroscopyData = self.currData['spectroscopy']
         if spectroscopyData is not None:
             spectroscopyKeys = list(spectroscopyData.keys())
-            spectroscopyKeys = [int(i) for i in spectroscopyKeys]
+            spectroscopyKeys = [float(i) for i in spectroscopyKeys]
             spectroscopyKeys.sort()
             spectroscopyKeys = [str(i) for i in spectroscopyKeys]
             spectroscopyVals = [spectroscopyData[k] for k in spectroscopyKeys]

@@ -197,8 +197,10 @@ def main():
         lpodProc.currData = sensorData
         newGarageState = sensorData[0]
         newTrapState = sensorData[1]
-        phValue = sensorData[2]
-        condValue = sensorData[3]
+        if sensorData[2] > 0:
+            phValue = sensorData[2]
+        if sensorData[3] > 0:
+            condValue = sensorData[3]
         ussValue = sensorData[4]
         bulbValue = sensorData[5]
         ledValue = sensorData[6]
