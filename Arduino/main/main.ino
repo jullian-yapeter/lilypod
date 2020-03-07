@@ -125,7 +125,7 @@ void loop(){
     // ledStrip.testFunction();
     // lightBulb.testFunction();
     // while(true){};
-    //  runRoutine();
+     runRoutine();
 }
 
 
