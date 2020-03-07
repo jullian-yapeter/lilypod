@@ -106,7 +106,7 @@ class LpodProc():
             if prevState == 'FILTERSTATE':
                 if round(newTrapState, 2) == 1.0:
                     newState = 'SAMPLESTATE'
-                else:
+                elif round(newTrapState, 2) == 2.0:
                     newState = 'MALFUNCTION'
             if prevState == 'SAMPLESTATE':
                 newState = 'CHECKGARBAGE'
