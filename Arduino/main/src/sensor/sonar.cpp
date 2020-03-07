@@ -11,7 +11,7 @@ void Sonar::setupSonar(int trigPin1, int echoPin1){
     _trigPin = trigPin1;
     _echoPin = echoPin1;
 
-    // Serial.println( "Sonar Setup Complete" );
+    Serial.println( "Sonar Setup Complete" );
 }
 
 long Sonar::findGarbageCapacity(){
@@ -29,9 +29,9 @@ long Sonar::findGarbageCapacity(){
 
     // Calculating the distance
     unsigned distance = duration*0.034/2.0;
-    // Serial.print("Sonar: ");
-    // Serial.print(distance);
-    // Serial.print("\n");
+    Serial.print("Sonar: ");
+    Serial.print(distance);
+    Serial.print("\n");
 
     return distance;
 }
@@ -41,11 +41,11 @@ float Sonar::isGarbageFull(){
     float isFull = 0.0;
     if (capacity <= _garbageThreshold){
         isFull = 1.0;
-        // Serial.println("Garbage is full");
+        Serial.println("Garbage is full");
     }else{
-        // Serial.print("Garbage capacity: ");
-        // Serial.print(capacity);
-        // Serial.print("\n");
+        Serial.print("Garbage capacity: ");
+        Serial.print(capacity);
+        Serial.print("\n");
     }
 
     return isFull;

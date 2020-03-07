@@ -11,7 +11,7 @@ void LedStrip::setupStrip(int pinRed, int pinGreen, int PinBlue){
     pinMode(_pinRed, OUTPUT);
     pinMode(_pinGreen, OUTPUT);
     pinMode(_pinBlue, OUTPUT);
-    // Serial.println("LED Strip setup complete");
+    Serial.println("LED Strip setup complete");
 }
 
 float LedStrip::shineRed(){
@@ -50,25 +50,25 @@ float LedStrip::turnOff(){
 }
 
 void LedStrip::testFunction(){
-    // Serial.println("Shining Red");
+    Serial.println("Shining Red");
     shineRed();
     delay(2000);
-    // Serial.println("Shining Green");
+    Serial.println("Shining Green");
     shineGreen();
     delay(2000);
-    // Serial.println("Shining Blue");
+    Serial.println("Shining Blue");
     shineBlue();
     delay(2000);
-    // Serial.println("Shining White");
+    Serial.println("Shining White");
     shineWhite();
     delay(2000);
-    // Serial.println("Strip off");
+    Serial.println("Strip off");
     turnOff();
     delay(1000);
-    // Serial.println("Shining White");
+    Serial.println("Shining White");
     shineWhite();
     delay(2000);
-    // Serial.println("Strip off");
+    Serial.println("Strip off");
     turnOff();
     delay(1000);
 

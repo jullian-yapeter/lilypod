@@ -7,7 +7,7 @@ void LightBulb::setupLightBulb(int pinIn){
 
     // Set up all the pins for output. Create pin vars for other funcs
     pinMode(_pinIn, OUTPUT);
-    // Serial.println("Light Bulb setup complete");
+    Serial.println("Light Bulb setup complete");
 }
 
 float LightBulb::turnOn(){
@@ -21,10 +21,10 @@ float LightBulb::turnOff(){
 }
 
 void LightBulb::testFunction(){
-    // Serial.println("Lightbulb on");
+    Serial.println("Lightbulb on");
     turnOn();
     delay(2000);
-    // Serial.println("Lightbulb off");
+    Serial.println("Lightbulb off");
     turnOff();
     delay(2000);
 }

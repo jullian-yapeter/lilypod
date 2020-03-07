@@ -162,12 +162,12 @@ void runRoutine(){
     }
     if (checkequals(bulbState, 1.0)){
         //Turn on lightbulb
-        // Serial.println("Turning on spectrometer light");
+        Serial.println("Turning on spectrometer light");
         newBlulbState = lightBulb.turnOn();
     }
     else{
         //Turn off lightbulb
-        // Serial.println("Turning off spectrometer light");
+        Serial.println("Turning off spectrometer light");
         newBlulbState = lightBulb.turnOff();
     }
     if (checkequals(garageState, 1.0)) {
