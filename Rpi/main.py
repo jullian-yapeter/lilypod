@@ -83,7 +83,7 @@ class LpodProc():
         # print("CURR ELAPSED TIME :", currElapsedTime)
         startTime = time.time()
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
-            pass
+            self.serialcomm.commManager.sendQueue.get()
         if currElapsedTime < self.routine.timingLookUp[prevState]:
             self.routine.updateState(prevState)
             commands = self.routine.currentRoutineStep
