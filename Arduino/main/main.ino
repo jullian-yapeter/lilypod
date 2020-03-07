@@ -176,7 +176,7 @@ void runRoutine(){
         if (checkequals(garageDir, 1.0)){
             newGarageState = garage.openDoor();
         }
-        else if (checkequals(garageState, 0.0)){
+        else if (checkequals(garageDir, 0.0)){
             newGarageState = garage.closeDoor();
         }
     }
