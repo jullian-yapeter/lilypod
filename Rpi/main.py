@@ -117,32 +117,29 @@ class LpodProc():
     def send_to_arduino(self, state, commands):
         # while self.serialcomm.commManager.sendQueue.qsize() > 0:
         #     self.serialcomm.commManager.sendQueue.get()
-        if self.serialcomm.commManager.sendQueue.qsize() == 0:
-            self.serialcomm.commManager.sendQueue.put(commands)
-            pumpState = commands[0]
-            bulbState = commands[1]
-            garageState = commands[2]
-            garageDir = commands[3]
-            trapState = commands[4]
-            trapDir = commands[5]
-            phState = commands[6]
-            condState = commands[7]
-            ussState = commands[8]
-            ledStrip = commands[9]
-            print("ROUTINE : ", state)
-            print("Sent to Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
-                .format(pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip))
-            logs.pimain.info("COMMANDS PLACED IN QUEUE")
-        else:
+        if self.serialcomm.commManager.sendQueue.qsize() > 0:
             logs.pimain.info("ARDUINO BUSY, TRASH COMMAND")
+            return False
+        elif self.serialcomm.commManager.sendQueue.qsize() == 0:
+            self.serialcomm.commManager.sendQueue.put(commands)
+            logs.pimain.info("COMMANDS PLACED IN QUEUE")
+            return True
+        # else:
+        #     logs.pimain.info("ARDUINO BUSY, TRASH COMMAND")
 
     def read_from_arduino(self):
         if self.serialcomm.commManager.receiveQueue.qsize() <= 0:
-            return None
-        if self.serialcomm.commManager.receiveQueue.qsize() > 0:
+            return False, None
+        # dataNotReceived = True
+        # while dataNotReceived:
+        #     if self.serialcomm.commManager.receiveQueue.qsize() > 0:
+        #         dataNotReceived = False
+        elif self.serialcomm.commManager.receiveQueue.qsize() > 0:
             self.currData = self.serialcomm.commManager.receiveQueue.get()
             logs.pimain.info("DATA POPPED FROM QUEUE")
-            return self.currData
+            return True, self.currData
+        # else:
+        #     return None
 
 
 def main():
@@ -166,36 +163,57 @@ def main():
     procTime = 0
     sensorData = []
     start = time.time()
-    try:
-        while (time.time() - start < 500):
-            # commands = lpodProc.generateDummyCommandsData()
-            prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
-            startProcTime = time.time()
-            lpodProc.send_to_arduino(prevState, commands)
-            sensorData = lpodProc.read_from_arduino()
-            if sensorData and (None not in sensorData):
-                lpodProc.currData = sensorData
-                newGarageState = sensorData[0]
-                newTrapState = sensorData[1]
-                phValue = sensorData[2]
-                condValue = sensorData[3]
-                ussValue = sensorData[4]
-                bulbValue = sensorData[5]
-                ledValue = sensorData[6]
-                print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
-                      .format(newGarageState, newTrapState, phValue, condValue, ussValue, bulbValue, ledValue))
-                # Process data and update database
-                if prevState == 'SAMPLESTATE':
-                    lpodProc.update_db(location=lpodProc.geolocation.getGeolocation(), timestamp=time.time(),
-                                       ph=round(phValue, 2), conductivity=round(condValue, 2),
-                                       garbageLevel=round(ussValue, 2), spectroscopy=lpodProc.run_spectroscopy())
-            procTime = time.time() - startProcTime
-        logs.pimain.error("RESTARTING PROGRAM")
-        restart_program()
-    except Exception as e:
-        logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
-        logs.pimain.error("RESTARTING PROGRAM")
-        restart_program()
+    # try:
+    while (time.time() - start < 500):
+        # commands = lpodProc.generateDummyCommandsData()
+        prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
+        startProcTime = time.time()
+        successfulcommunication = False
+
+        datasent = False
+        datareceived = False
+        while not successfulcommunication:
+            datasent = lpodProc.send_to_arduino(prevState, commands)
+            datareceived, sensorData = lpodProc.read_from_arduino()
+            if (sensorData is not None) and (None not in sensorData):
+                successfulcommunication = True
+
+        pumpState = commands[0]
+        bulbState = commands[1]
+        garageState = commands[2]
+        garageDir = commands[3]
+        trapState = commands[4]
+        trapDir = commands[5]
+        phState = commands[6]
+        condState = commands[7]
+        ussState = commands[8]
+        ledStrip = commands[9]
+        print("ROUTINE : ", prevState)
+        print("Sent to Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
+            .format(pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip))
+    
+        lpodProc.currData = sensorData
+        newGarageState = sensorData[0]
+        newTrapState = sensorData[1]
+        phValue = sensorData[2]
+        condValue = sensorData[3]
+        ussValue = sensorData[4]
+        bulbValue = sensorData[5]
+        ledValue = sensorData[6]
+        print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
+                .format(newGarageState, newTrapState, phValue, condValue, ussValue, bulbValue, ledValue))
+        # Process data and update database
+        if prevState == 'SAMPLESTATE':
+            lpodProc.update_db(location=lpodProc.geolocation.getGeolocation(), timestamp=time.time(),
+                                ph=round(phValue, 2), conductivity=round(condValue, 2),
+                                garbageLevel=round(ussValue, 2), spectroscopy=lpodProc.run_spectroscopy())
+        procTime = time.time() - startProcTime
+        # logs.pimain.error("RESTARTING PROGRAM")
+        # restart_program()
+    # except Exception as e:
+    #     logs.pimain.error("MAIN PROCESS FAILED DUE TO %s", e)
+    #     logs.pimain.error("RESTARTING PROGRAM")
+    #     restart_program()
 
     sendProc.terminate()
     recvProc.terminate()

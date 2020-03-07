@@ -10,8 +10,8 @@ import time
 class CommManager():
     def __init__(self, host=socket.gethostname(), port=8082, protocol='serial'):
         self.procsManager = Manager()
-        self.receiveQueue = self.procsManager.Queue()
-        self.sendQueue = self.procsManager.Queue()
+        self.receiveQueue = self.procsManager.Queue(1)
+        self.sendQueue = self.procsManager.Queue(1)
         if protocol == 'socket':
             self.host = host
             self.port = port
@@ -103,7 +103,7 @@ class Serialcomm:
                     self.ser.write(message)
                     self.ser.write(bytes.fromhex('FB'))
                     logs.serialcomm.info("DATA SENT TO SERVER")
-                    time.sleep(0.1)
+                    # time.sleep(0.1)
         except Exception as e:
             logs.serialcomm.error("UNABLE TO SEND COMMANDS : %s", e)
             self.commManager.client.close()
@@ -126,7 +126,7 @@ class Serialcomm:
                 else:
                     logs.serialcomm.warning("WRONG START OR END BYTE, TRASHING DATA")
                     pass
-                time.sleep(0.1)
+                # time.sleep(0.1)
         except Exception as e:
             logs.serialcomm.error("UNABLE TO RECEIVE COMMANDS : %s", e)
             self.commManager.client.close()
