@@ -7,7 +7,7 @@ lilyenv
 venv
 
 *.log
-*.log*
+*.log.*
 __init__.py
 privatekey/
 
