@@ -4,7 +4,7 @@ import psutil
 
 from cloudcomm.cloudcomm import LilypodFirestore, LilypodObject
 from serialcomm.serialcomm import Serialcomm
-# from spectrometer import spectrometer
+from spectrometer.spectrometer import sample_water
 from logs.logs import logs
 from routine import LilypodRoutine
 from cellular.geolocation import Geolocation
@@ -62,7 +62,9 @@ class LpodProc():
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
     def run_spectroscopy(self):
-        return {"0": np.random.uniform(0, 100), "1": np.random.uniform(0, 100), "2": np.random.uniform(0, 100), "3": np.random.uniform(0, 100), "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": np.random.uniform(0, 100)}
+        # # Dummy Spectrometer Data
+        # return {"0": np.random.uniform(0, 100), "1": np.random.uniform(0, 100), "2": np.random.uniform(0, 100), "3": np.random.uniform(0, 100), "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": np.random.uniform(0, 100)}
+        return sample_water()
 
     def generateDummyCommandsData(self):
         while self.serialcomm.commManager.sendQueue.qsize() > 0:
