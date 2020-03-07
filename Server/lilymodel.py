@@ -20,7 +20,7 @@ class LilypodML():
 
     def initializeModel(self):
         # define three sets of inputs
-        inputSpec = Input(batch_shape=(1, 1, 10))
+        inputSpec = Input(batch_shape=(1, 1, 1000))
         inputPh = Input(batch_shape=(1, 1, 1))
         inputCond = Input(batch_shape=(1, 1, 1))
 
@@ -45,7 +45,7 @@ class LilypodML():
         # y = Model(inputs=inputCond, outputs=y)
 
         # the first branch operates on the spectrometery input
-        w = Dense(10, activation="relu", batch_input_shape=(1, 1, 10))(inputSpec)
+        w = Dense(100, activation="relu", batch_input_shape=(1, 1, 10))(inputSpec)
         w = BatchNormalization()(w)
         w = Dense(50, activation="relu")(w)
         w = BatchNormalization()(w)
