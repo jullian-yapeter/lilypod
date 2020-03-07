@@ -157,7 +157,7 @@ void runRoutine(){
         // Turn off pump
         pump.stop();
     }
-    if (checkequals(bulbState,1.0)){
+    if (checkequals(bulbState, 1.0)){
         //Turn on lightbulb
         // Serial.println("Turning on spectrometer light");
         lightBulb.turnOn();
@@ -167,62 +167,53 @@ void runRoutine(){
         // Serial.println("Turning off spectrometer light");
         lightBulb.turnOff();
     }
-    if (checkequals(garageState,1.0)) {
+    if (checkequals(garageState, 1.0)) {
         // Move garage in direction = garageDir
         // update garageState to inform Rpi
+        newGarageState = 2.0;
         if (checkequals(garageDir, 1.0)){
             newGarageState = garage.openDoor();
-            newGarageState = 1.0;
         }
         else if (checkequals(garageState, 0.0)){
             newGarageState = garage.closeDoor();
-            newGarageState = 0.0;
         }
     }
-    else{
-        newGarageState = 2.0;
-    }
-    if (checkequals(trapState,1.0)){
-        
+    if (checkequals(trapState, 1.0)){
+        newTrapState = 2.0;
         // Move trap in direction = trapDir
         // update trapState to inform Rpi
         if (checkequals(trapDir, 1.0)){
             newTrapState = trap.openDoor();
-            newTrapState = 1.0;
         }
         else if (checkequals(trapDir, 0.0)){
             newTrapState = trap.closeDoor();
-            newTrapState = 0.0;
         }
     }
-    else{
-        newTrapState = 2.0;
-    }
-    if (checkequals(phState,1.0)){
+    if (checkequals(phState, 1.0)){
         // get new pH reading and store it in phValue
         phValue = phSensor.samplePh();
     }
-    if (checkequals(condState,1.0)){
+    if (checkequals(condState, 1.0)){
         // get new conductivity reading and store it in phValue
         condValue = condSensor.sampleConductivity();
     }
-    if (checkequals(ussState,1.0)){
+    if (checkequals(ussState, 1.0)){
         // get new ultrasonic reading and store it in phValue
         ussValue = garbageChecker.isGarbageFull();
     }
-    if (checkequals(ledState,0.0)){
+    if (checkequals(ledState, 0.0)){
         // shine blue
         ledStrip.shineBlue();
     }
-    else if (checkequals(ledState,1.0)){
+    else if (checkequals(ledState, 1.0)){
         // shine green
         ledStrip.shineGreen();
     }
-    else if (checkequals(ledState,2.0)){
+    else if (checkequals(ledState, 2.0)){
         // shine yellow
         ledStrip.shineWhite();
     }
-    else if (checkequals(ledState,3.0)){
+    else if (checkequals(ledState, 3.0)){
         // shine red
         ledStrip.shineRed();
     }

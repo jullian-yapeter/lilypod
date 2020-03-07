@@ -66,19 +66,19 @@ float ServoDoor::openDoor(){
             currTime  = millis();
             if (currTime - startTime > _TIMEOUT*1000){
                 // Serial.println("Time out on trap door open");
-                return 0.0;
+                return 2.0;
             }
         }
         return 1.0;
     }
     // Serial.println("Door opened");
-    return 0.0;
+    return 1.0;
     
 }
 
 float ServoDoor::closeDoor(){
     _servo.write(_closeAngle);
-    return 1.0;
+    return 0.0;
 }
 
 /*
