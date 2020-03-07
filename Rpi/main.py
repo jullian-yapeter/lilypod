@@ -152,8 +152,21 @@ def main():
         while (time.time() - start < 500):
             # commands = lpodProc.generateDummyCommandsData()
             prevTime, prevState, commands = lpodProc.generateCommandsData(lpodProc.currData, prevState, prevTime + procTime)
+            print("ROUTINE : ", prevState)
             startProcTime = time.time()
+            pumpState = commands[0]
+            bulbState = commands[1]
+            garageState = commands[2]
+            garageDir = commands[3]
+            trapState = commands[4]
+            trapDir = commands[5]
+            phState = commands[6]
+            condState = commands[7]
+            ussState = commands[8]
+            ledStrip = commands[9]
             lpodProc.send_to_arduino(commands)
+            print("Sent to Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
+                  .format(pumpState, bulbState, garageState, garageDir, trapState, trapDir, phState, condState, ussState, ledStrip))
             # print(commands)
             sensorData = lpodProc.read_from_arduino()
             if sensorData and (None not in sensorData):
@@ -163,7 +176,6 @@ def main():
                 phValue = sensorData[2]
                 condValue = sensorData[3]
                 ussValue = sensorData[4]
-                print("ROUTINE : ", prevState)
                 print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue))
                 # Process data and update database
