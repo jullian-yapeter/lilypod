@@ -178,7 +178,7 @@ def main():
                 ussValue = sensorData[4]
                 bulbValue = sensorData[5]
                 ledValue = sensorData[6]
-                print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.f}]"
+                print("Received from Arduino : [{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f}]"
                       .format(newGarageState, newTrapState, phValue, condValue, ussValue, bulbValue, ledValue))
                 # Process data and update database
                 if prevState == 'SAMPLESTATE':
