@@ -30,13 +30,13 @@ class LilypodRoutine():
         # 1.0 means on/open/CCW/outwards
         # Speed is in terms of percentage
         # Check garbage state
-        self.routineLookUp[RoutineStates.CHECKGARBAGE.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+        self.routineLookUp[RoutineStates.CHECKGARBAGE.value] = [1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
         # Garbage full state
         self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
         # Filtering state
         self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
-        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
+        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
          # Malfunction state
         self.routineLookUp[RoutineStates.MALFUNCTION.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
 
