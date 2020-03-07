@@ -62,7 +62,7 @@ class LpodProc():
             logs.pimain.error("%s FAILED TO BE WRITTEN TO DB", self.lilypod.name)
 
     def run_spectroscopy(self):
-        # # Dummy Spectrometer Data
+        # Dummy Spectrometer Data
         # return {"0": np.random.uniform(0, 100), "1": np.random.uniform(0, 100), "2": np.random.uniform(0, 100), "3": np.random.uniform(0, 100), "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": np.random.uniform(0, 100)}
         return sample_water()
 
@@ -163,6 +163,8 @@ def main():
     prevState = 'CHECKGARBAGE'
     prevTime = 0
     procTime = 0
+    phValue = 0
+    condValue = 0
     sensorData = []
     start = time.time()
     try:
