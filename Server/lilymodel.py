@@ -52,15 +52,15 @@ class LilypodML():
         w = Dense(10, activation="relu")(w)
         w = Model(inputs=inputSpec, outputs=w)
         # the second branch opreates on the pH input
-        x = Dense(3, activation="relu", batch_input_shape=(1, 1, 1))(inputPh)
+        x = Dense(5, activation="relu", batch_input_shape=(1, 1, 1))(inputPh)
         x = BatchNormalization()(x)
-        x = Dense(1, activation="relu")(x)
+        x = Dense(5, activation="relu")(x)
         x = BatchNormalization()(x)
         x = Model(inputs=inputPh, outputs=x)
         # the third branch opreates on the conductivity input
-        y = Dense(3, activation="relu", batch_input_shape=(1, 1, 1))(inputCond)
+        y = Dense(5, activation="relu", batch_input_shape=(1, 1, 1))(inputCond)
         y = BatchNormalization()(y)
-        y = Dense(1, activation="relu")(y)
+        y = Dense(5, activation="relu")(y)
         y = BatchNormalization()(y)
         y = Model(inputs=inputCond, outputs=y)
 
@@ -68,8 +68,8 @@ class LilypodML():
         combined = concatenate([w.output, x.output, y.output], axis=-1)
         # apply a FC layer and then a regression prediction on the
         # combined outputs
-        # z = Dense(10, activation="sigmoid")(combined)
-        z = Dense(1, activation="linear")(combined)
+        z = Dense(10, activation="relu")(combined)
+        z = Dense(1, activation="linear")(z)
         # our model will accept the inputs of the two branches and
         # then output a single value
         model = Model(inputs=[w.input, x.input, y.input], outputs=z)
