@@ -203,7 +203,7 @@ def draw_graph(draw, pic_pixels, aperture: object, spectrum_angle, wavelength_fa
         graph_y = amplitude / 50 * aperture_height
         draw.line((x - step, y0 + aperture_height - last_graph_y, x, y0 + aperture_height - graph_y), fill="#fff")
         last_graph_y = graph_y
-    draw_ticks_and_frequencies(draw, aperture, spectrum_angle, wavelength_factor)
+    # draw_ticks_and_frequencies(draw, aperture, spectrum_angle, wavelength_factor)
     return results, max_result
 
 
@@ -331,21 +331,22 @@ def sample_water(file_name='test_graph', shutter=100000):
         results, max_result = draw_graph(draw, pic_pixels, aperture, spectrum_angle, wavelength_factor)
 
         # 5. Inform user of issues with exposure
+        print("Checking exposure...")
         inform_user_of_exposure(max_result)
 
         # 6. Save picture with overlay
-        save_image_with_overlay(im, name)
+        # save_image_with_overlay(im, name)
 
         # 7. Normalize results for export
-        print("exporting CSV")
+        # print("exporting CSV")
         normalized_results = normalize_results(results, max_result)
 
         # 8. Save csv of results
-        export_csv(name, normalized_results)
+        # export_csv(name, normalized_results)
 
         # 9. Generate spectrum diagram
-        print("generating chart")
-        export_diagram(name, normalized_results)
+        # print("generating chart")
+        # export_diagram(name, normalized_results)
 
         # 10. Return the results for pi main loop
         return normalized_results
