@@ -56,7 +56,7 @@ void ServoDoor::setupGarageDoor(int servoPin, int openAngle, int closeAngle){
 float ServoDoor::openDoor(){
     // If top limit switch open, keep servo moving in a direction.
     if (!_useLimSwitch){
-        _servo.write(_openAngle);
+        changeToServoAngle(_openAngle);
         return 1.0;
     }else{
         int startTime = millis();
@@ -77,7 +77,7 @@ float ServoDoor::openDoor(){
 }
 
 float ServoDoor::closeDoor(){
-    _servo.write(_closeAngle);
+    changeToServoAngle(_closeAngle);
     return 0.0;
 }
 
@@ -170,6 +170,26 @@ void ServoDoor::changeServoAngle(int direction){
     delay(200);
 }
 
+void ServoDoor::changeToServoAngle(int newAngle){
+    int currAngle = 0;
+    currAngle = _servo.read();
+    if (newAngle > currAngle){
+        while (currAngle < newAngle){
+            _servo.write(currAngle + 2);
+            currAngle = _servo.read();
+            delay(_DELAY);
+        }
+    }
+    if (newAngle < currAngle){
+        while (currAngle > newAngle){
+            _servo.write(currAngle - 2);
+            currAngle = _servo.read();
+            delay(_DELAY);
+        }
+    }
+    
+}
+
 void ServoDoor::testFunction(){
     // Make servo go to 0 degrees 
     // Serial.println("In test function");
@@ -188,4 +208,20 @@ void ServoDoor::testFunction(){
     // Serial.println("moved 0");
     delay(2000);
     // Serial.println("Exiting test function");
+}
+
+
+void ServoDoor::testFunctionGarage(){
+    openDoor();
+    // Serial.print("Opening Servo door. ");
+    // Serial.print("moving to ");
+    // Serial.print(_openAngle);
+    // Serial.print("\n");
+    delay(5000);
+    closeDoor();
+    // Serial.print("Closing Servo door. ");
+    // Serial.print("Moving to ");
+    // Serial.print(_closeAngle);
+    // Serial.print("\n");
+    delay(5000);
 }

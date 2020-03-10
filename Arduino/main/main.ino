@@ -87,6 +87,11 @@ float ussValue = 0.0;
 float newBlulbState = 0.0;
 float newLedState = 0.0;
 
+int garageOpenAngle = 180;
+int garageCloseAngle = 0;
+int trapOpenAngle = 180;
+int trapCloseAngle = 0;
+
 Conductivity condSensor;
 PhSensor phSensor(pHSensorPin);
 Serialcomm serialcomm;
@@ -105,8 +110,8 @@ bool checkequals(float a, float b){
 void setup(){
     Serial.begin(9600);
     pump.setupMotor(motorPin1, motorPin2, motorEn);
-    garage.setupGarageDoor(servoGaragePin, 180, 0);
-    trap.setupTrapDoor(servoTrapPin, trapLimSwitch, 0);
+    garage.setupGarageDoor(servoGaragePin, garageOpenAngle, garageCloseAngle);
+    trap.setupGarageDoor(servoTrapPin, trapOpenAngle, trapCloseAngle);
     garbageChecker.setupSonar(trigPin, echoPin);
     condSensor.setupConductivity(conductPin);
     ledStrip.setupStrip(redPin, greenPin, bluePin);
@@ -120,7 +125,8 @@ void loop(){
     // garage.closeDoor();
     // trap.openDoor();
     // trap.closeDoor();
-    //  garage.closeDoor();
+    //  garage.testFunctionGarage();
+    // trap.testFunctionGarage();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
     // condSensor.sampleConductivity();

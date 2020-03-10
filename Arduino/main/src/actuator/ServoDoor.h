@@ -29,6 +29,7 @@ class ServoDoor{
     float openDoor(int openAngle);
     float closeDoor();
     void testFunction();
+    void testFunctionGarage();
     
     
   // library-accessible "private" interface
@@ -38,7 +39,9 @@ class ServoDoor{
     const int _maxAngle = 180;
     const int _minAngle = 0;
     const int _TIMEOUT = 5;  // in seconds
+    const int _DELAY = 50;
     void changeServoAngle(int direction);
+    void changeToServoAngle(int newAngle);
     bool isLimSwitchClosed();
     // bool isTopSwitchClosed();
     // bool isBottomSwitchClosed();
