@@ -29,9 +29,9 @@ float LedStrip::shineGreen(){
 }
 
 float LedStrip::shineBlue(){
-    analogWrite(_pinRed, 0);
-    analogWrite(_pinGreen, 0);
-    analogWrite(_pinBlue, _maxBlue);
+    analogWrite(_pinRed, 255);
+    analogWrite(_pinGreen, 255);
+    analogWrite(_pinBlue, 0);
     return _newBState;
 }
 
