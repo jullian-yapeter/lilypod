@@ -49,7 +49,7 @@ void ServoDoor::setupGarageDoor(int servoPin, int openAngle, int closeAngle){
     _useLimSwitch = false;
 
     _servo.attach(_servoPin);
-
+    _servo.write(_openAngle);
     int startAngle = _servo.read();
     // Serial.print("Angle: ");
     // Serial.println(startAngle);

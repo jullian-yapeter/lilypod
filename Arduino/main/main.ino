@@ -90,8 +90,8 @@ float newLedState = 0.0;
 
 int garageOpenAngle = 180;
 int garageCloseAngle = 0;
-int trapOpenAngle = 180;
-int trapCloseAngle = 0;
+int trapOpenAngle = 20;
+int trapCloseAngle = 100;
 int pumpSpeed = 100;
 const int pumpDirection = 1;
 
@@ -128,15 +128,22 @@ void loop(){
     // garage.closeDoor();
     // trap.openDoor();
     // trap.closeDoor();
-    garage.testFunctionGarage();
-    // trap.testFunctionGarage();
+//     trap.testFunctionGarage();
+//   trap._servo.write(90);
+//    int newAngle = garage._servo.read();
+//    // Serial.print("New servo angle");
+//    // Serial.print(newAngle);
+//    // Serial.print("\n");
+//    delay(5000);
+//     trap.testFunctionGarage();
+//     garage.testFunctionGarage();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
     // condSensor.sampleConductivity();
     // ledStrip.testFunction();
     // lightBulb.testFunction();
-    // while(true){};
-    //  runRoutine();
+//     while(true){};
+      runRoutine();
 }
 
 
