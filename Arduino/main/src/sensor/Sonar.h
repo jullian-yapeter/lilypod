@@ -10,7 +10,7 @@ class Sonar{
         float isGarbageFull();
         int _trigPin;
         int _echoPin;
-        int _garbageThreshold = 15;
+        int _garbageThreshold = 2;
 
 };
 
