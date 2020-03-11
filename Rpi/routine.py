@@ -32,13 +32,13 @@ class LilypodRoutine():
         # Check garbage state
         self.routineLookUp[RoutineStates.CHECKGARBAGE.value] = [1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
         # Garbage full state
-        self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
+        self.routineLookUp[RoutineStates.GARBAGEFULL.value] = [1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
         # Filtering state
         self.routineLookUp[RoutineStates.FILTERSTATE.value] = [1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         # Sampling state
-        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
+        self.routineLookUp[RoutineStates.SAMPLESTATE.value] = [1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 2.0]
          # Malfunction state
-        self.routineLookUp[RoutineStates.MALFUNCTION.value] = [0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
+        self.routineLookUp[RoutineStates.MALFUNCTION.value] = [1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0]
 
     def updateState(self, state):
         self.currentRoutineStep = self.routineLookUp[RoutineStates[state].value]
