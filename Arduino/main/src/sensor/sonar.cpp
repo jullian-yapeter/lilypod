@@ -47,6 +47,8 @@ float Sonar::isGarbageFull(){
         // Serial.print(capacity);
         // Serial.print("\n");
     }
+    // Testing:
+    isFull = 0.0;
 
     return isFull;
 }
