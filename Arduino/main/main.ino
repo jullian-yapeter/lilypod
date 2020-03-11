@@ -1,3 +1,4 @@
+
 #include <Servo.h>
 #include "Arduino.h"
 #include "src/sensor/Conductivity.h"
@@ -91,6 +92,8 @@ int garageOpenAngle = 180;
 int garageCloseAngle = 0;
 int trapOpenAngle = 180;
 int trapCloseAngle = 0;
+int pumpSpeed = 100;
+const int pumpDirection = 1;
 
 Conductivity condSensor;
 PhSensor phSensor(pHSensorPin);
@@ -125,7 +128,7 @@ void loop(){
     // garage.closeDoor();
     // trap.openDoor();
     // trap.closeDoor();
-    //  garage.testFunctionGarage();
+    garage.testFunctionGarage();
     // trap.testFunctionGarage();
     // serialcomm.runSerialComm();
     // bool garbageState = garbageChecker.isGarbageFull();
@@ -133,7 +136,7 @@ void loop(){
     // ledStrip.testFunction();
     // lightBulb.testFunction();
     // while(true){};
-     runRoutine();
+    //  runRoutine();
 }
 
 
@@ -154,8 +157,6 @@ void runRoutine(){
     float ledState = commandsData[9];
 
     // Do stuff with commands: get sensor data and run actuators
-
-    int pumpSpeed = 100;
 
     if (checkequals(pumpState, 1.0)){
         // Run pump with speed = pumpSpeed

@@ -40,6 +40,7 @@ class ServoDoor{
     const int _minAngle = 0;
     const int _TIMEOUT = 5;  // in seconds
     const int _DELAY = 50;
+    const int _increment = 10;
     void changeServoAngle(int direction);
     void changeToServoAngle(int newAngle);
     bool isLimSwitchClosed();
