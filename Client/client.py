@@ -85,13 +85,21 @@ class Dashboard():
         pygame.display.set_caption('LILYPOD Dashboard')
         self.screen.fill(background_colour)
         self.addTitle('LILYPOD Dashboard')
+        self.addLogo('logo.jpg')
         pygame.display.flip()
 
     def addTitle(self, title):
-        font = pygame.font.Font('ostrich-regular.ttf', 70)
+        font = pygame.font.Font('ostrich-regular.ttf', 90)
         self.title = font.render(title, True, (0, 0, 0), (220, 220, 220))
         self.titlebox = self.title.get_rect()
         self.titlebox.center = (self.width//2, self.height//15)
+
+    def addLogo(self, logoImage):
+        image = pygame.image.load(logoImage)
+        image = pygame.transform.scale(image, (100,100))
+        rect_image_bound = image.get_rect()
+        rect_image_bound = rect_image_bound.move((self.width//8,self.height//120))
+        self.screen.blit(image, rect_image_bound)
 
     def updateDashboard(self):
         running = True
@@ -278,12 +286,12 @@ class InputInterface():
         self.predict_button = pygame.Rect(940, 450, 200, 32)
         self.pb_active = False
 
-        font = pygame.font.Font('freesansbold.ttf', 30)
-        self.labelboxtitle = font.render("Input Crop Rating", True, (0, 0, 0), (255, 255, 255))
+        font = pygame.font.Font('ostrich-regular.ttf', 30)
+        self.labelboxtitle = font.render("Input Crop Rating", True, (0, 0, 0), (220, 220, 220))
         self.labelboxtitlebox = self.labelboxtitle.get_rect()
         self.labelboxtitlebox.center = (self.input_box.center[0], self.input_box.center[1]-30)
 
-        self.scoreboxtitle = font.render("Predicted Crop Rating", True, (0, 0, 0), (255, 255, 255))
+        self.scoreboxtitle = font.render("Predicted Crop Rating", True, (0, 0, 0), (220, 220, 220))
         self.scoreboxtitlebox = self.scoreboxtitle.get_rect()
         self.scoreboxtitlebox.center = (self.output_box.center[0], self.output_box.center[1]-30)
 
