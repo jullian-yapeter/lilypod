@@ -79,19 +79,27 @@ class Dashboard():
         self.currData = None
 
     def generateEmptyDashboard(self):
-        background_colour = (255, 255, 255)
+        background_colour = (220, 220, 220) #Light Grey
         (width, height) = (self.width, self.height)
         self.screen = pygame.display.set_mode((width, height))
-        pygame.display.set_caption('Lilypod Dashboard')
+        pygame.display.set_caption('LILYPOD Dashboard')
         self.screen.fill(background_colour)
-        self.addTitle('Lilypod Dashboard')
+        self.addTitle('LILYPOD Dashboard')
+        self.addLogo('logo.jpg')
         pygame.display.flip()
 
     def addTitle(self, title):
-        font = pygame.font.Font('freesansbold.ttf', 50)
-        self.title = font.render(title, True, (0, 0, 0), (255, 255, 255))
+        font = pygame.font.Font('ostrich-regular.ttf', 90)
+        self.title = font.render(title, True, (0, 0, 0), (220, 220, 220))
         self.titlebox = self.title.get_rect()
         self.titlebox.center = (self.width//2, self.height//15)
+
+    def addLogo(self, logoImage):
+        image = pygame.image.load(logoImage)
+        image = pygame.transform.scale(image, (100,100))
+        rect_image_bound = image.get_rect()
+        rect_image_bound = rect_image_bound.move((self.width//8,self.height//120))
+        self.screen.blit(image, rect_image_bound)
 
     def updateDashboard(self):
         running = True
@@ -127,7 +135,7 @@ class Dashboard():
                         self.ii.active = not self.ii.active
                     else:
                         self.ii.active = False
-                    
+
                     if self.ii.label_button.collidepoint(event.pos):
                         # Toggle the active variable.
                         self.ii.lb_active = True
@@ -178,10 +186,10 @@ class Dashboard():
             output_txt_surface = None
             if score is not None:
                 output_txt_surface = self.ii.font.render(str(round(score, 2)), True, pygame.Color('black'))
-            
+
             label_txt_surface = self.ii.font.render("Set Rating", True, pygame.Color('black'))
             predict_txt_surface = self.ii.font.render("Get Rating", True, pygame.Color('black'))
-            
+
             width = max(200, txt_surface.get_width()+10)
 
             self.screen.blit(self.title, self.titlebox)
@@ -277,13 +285,13 @@ class InputInterface():
 
         self.predict_button = pygame.Rect(940, 450, 200, 32)
         self.pb_active = False
-        
-        font = pygame.font.Font('freesansbold.ttf', 30)
-        self.labelboxtitle = font.render("Input Crop Rating", True, (0, 0, 0), (255, 255, 255))
+
+        font = pygame.font.Font('ostrich-regular.ttf', 30)
+        self.labelboxtitle = font.render("Input Crop Rating", True, (0, 0, 0), (220, 220, 220))
         self.labelboxtitlebox = self.labelboxtitle.get_rect()
         self.labelboxtitlebox.center = (self.input_box.center[0], self.input_box.center[1]-30)
 
-        self.scoreboxtitle = font.render("Predicted Crop Rating", True, (0, 0, 0), (255, 255, 255))
+        self.scoreboxtitle = font.render("Predicted Crop Rating", True, (0, 0, 0), (220, 220, 220))
         self.scoreboxtitlebox = self.scoreboxtitle.get_rect()
         self.scoreboxtitlebox.center = (self.output_box.center[0], self.output_box.center[1]-30)
 
