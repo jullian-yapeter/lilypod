@@ -53,21 +53,22 @@ int Motor::getPwmOutput(int dutyCycle){
 }
 
 void Motor::testFunction(){
+    // Serial.println("Pump function");
     start(100, _FORWARD);
-    // Serial.println("Moving Forward at 100");
-    delay(1000);
+    // Serial.println("Pump Forward at 100");
+    delay(5000);
     start(60, _FORWARD);
-    // Serial.println("Moving Forward at 60");
-    delay(1000);
+    // Serial.println("Pump Forward at 60");
+    delay(5000);
     stop();
     // Serial.println("Stopped");
-    delay(2000);
-    start(100, _BACKWARD);
-    // Serial.println("Moving Backward at 100");
-    delay(1000);
-    start(60, _BACKWARD);
-    // Serial.println("Moving Backward at 60");
-    delay(1000);
+    // delay(2000);
+    // start(100, _BACKWARD);
+    // // Serial.println("Moving Backward at 100");
+    // delay(1000);
+    // start(60, _BACKWARD);
+    // // Serial.println("Moving Backward at 60");
+    // delay(1000);
     stop();
     // Serial.println("Stopped");
     delay(2000);

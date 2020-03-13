@@ -122,28 +122,34 @@ void setup(){
 }
 
 void loop(){
-    // phSensor.samplePh();
-    // testMotor.testFunction();
-    // garage.testFunction();
+//     phSensor.samplePh();
+//     pump.testFunction();
+//     garage.testFunction();
+//     // Serial.println("Trap door");
+//     trap.testFunction();
     // garage.closeDoor();
     // trap.openDoor();
     // trap.closeDoor();
 //     trap.testFunctionGarage();
 //   trap._servo.write(90);
 //    int newAngle = garage._servo.read();
-//    // Serial.print("New servo angle");
-//    // Serial.print(newAngle);
-//    // Serial.print("\n");
+//    // // Serial.print("New servo angle");
+//    // // Serial.print(newAngle);
+//    // // Serial.print("\n");
 //    delay(5000);
 //     trap.testFunctionGarage();
 //     garage.testFunctionGarage();
     // serialcomm.runSerialComm();
-    // bool garbageState = garbageChecker.isGarbageFull();
-    // condSensor.sampleConductivity();
-    // ledStrip.testFunction();
-    // lightBulb.testFunction();
+//     bool garbageState = garbageChecker.isGarbageFull();
+//     // Serial.println(garbageState);
+//     delay(200);
+//     condSensor.sampleConductivity();
+     ledStrip.testFunction();
+//     lightBulb.testFunction();
+//  ledStrip.shineBlue();
 //     while(true){};
       runRoutine();
+//      pump.start(100, 1);
 }
 
 
@@ -175,12 +181,12 @@ void runRoutine(){
     }
     if (checkequals(bulbState, 1.0)){
         //Turn on lightbulb
-        // Serial.println("Turning on spectrometer light");
+        // // Serial.println("Turning on spectrometer light");
         newBlulbState = lightBulb.turnOn();
     }
     else{
         //Turn off lightbulb
-        // Serial.println("Turning off spectrometer light");
+        // // Serial.println("Turning off spectrometer light");
         newBlulbState = lightBulb.turnOff();
     }
     if (checkequals(garageState, 1.0)) {
