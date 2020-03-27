@@ -53,7 +53,7 @@ float PhSensor::readAvgAnalogValue(void){
 }
 
 float PhSensor::convertAnalogtoPh(float avgValue){
-    float phValue=(float) avgValue*5.0/1024; //convert the analog into millivolt
+    float phValue=(float) avgValue*0.0049 - 0.0635; //convert the analog into millivolt
     phValue = 3.5 * phValue;
     return phValue;
 }
