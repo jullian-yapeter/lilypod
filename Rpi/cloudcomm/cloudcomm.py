@@ -7,7 +7,7 @@ import google.cloud.exceptions as gc_exceptions
 
 class LilypodFirestore(object):
     # lily1 = Lilypod(name=u'aries', location=u'lake3', ph=5.4, conductivity=3.5, spectroscopy={'low': 1, 'high': 2})
-    def __init__(self, credentialPath='Rpi/cloudcomm/privatekey/lilypod-7a62a-firebase-adminsdk-6odtt-737826cc07.json',
+    def __init__(self, credentialPath='Rpi/cloudcomm/privatekey/lilypod-7a62a-firebase-adminsdk-fakekey.json',
                  dbName=u'lilypods'):
         cred = credentials.Certificate(credentialPath)
         self.app = firebase_admin.initialize_app(cred)
