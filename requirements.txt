@@ -24,7 +24,7 @@ idna==2.9
 iso8601==0.1.12
 mccabe==0.6.1
 msgpack==1.0.0
-Pillow==7.0.0
+Pillow==9.0.1
 protobuf==3.11.3
 psutil==5.7.0
 pyasn1==0.4.8
